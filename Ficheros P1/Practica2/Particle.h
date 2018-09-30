@@ -23,11 +23,17 @@ public:
 	Particle(physx::PxShape* _shape, Vector3 p_ = { 0.0, 0.0, 0.0 }, Vector3 v_ = { 0.0, 0.0, 0.0 }, 
 		Vector3 a_ = { 0.0, 0.0, 0.0 }, float damping_ = 1.0, int inverse_mass_ = 0) :
 		p(p_), v(v_), a(a_), damping(damping_), inverse_mass(inverse_mass_),
-		RenderItem(_shape, &physx::PxTransform(p), Vector3(1.0, 2.0, 3.0)) {}
+		RenderItem(_shape, &physx::PxTransform(p), Vector3(3.0, 3.0, 3.0)) {}
 	//la constructora de RenderItem recibe una forma, un transform que engloba una posicion y una orientacion
 	//y un Vector3 para el color
 
 	void update(float t) { integrate(t); }
+
+	void setPosition(Vector3 pos) { p = pos; }
+	void setVelocity(Vector3 vel) { v = vel; }
+	void setAcceleration(Vector3 acc) { a = acc; }
+	void setDamping(float damp) { damping = damp; }
+	void setMass(int mass) { inverse_mass = 1 / mass; }
 
 	~Particle() {}
 };
