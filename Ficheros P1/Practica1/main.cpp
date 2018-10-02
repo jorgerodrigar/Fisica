@@ -35,7 +35,7 @@ void initPhysics(bool interactive)
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
-	//creo una particula con, posicion, velocidad, aceleracion, dumping, masa y forma
+	//creo una particula con forma de capsula y dimensiones
 	Particle particle(CreateShape(PxCapsuleGeometry(5, 3)));
 }
 

@@ -37,10 +37,11 @@ void initPhysics(bool interactive)
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
-	//creo una particula con, posicion, velocidad, aceleracion, dumping, masa y forma
+	// creo una particula con forma de capsula y unas dimensiones
 	particle = new Particle(CreateShape(PxCapsuleGeometry(5, 3)));
-	particle->setMass(1);
-	particle->setVelocity({ 0, 50, 0 });
+	particle->setMass(1);                 // masa = 1
+	particle->setPosition(0, 20, 0);      // lo pongo en la posicion deseada
+	particle->setVelocity(-10, 0, 0);     // le aplico velocidad para que se mueva de forma constante
 }
 
 // Function to configure what happens in each step of physics
