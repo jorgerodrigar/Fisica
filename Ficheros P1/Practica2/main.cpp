@@ -40,7 +40,7 @@ void initPhysics(bool interactive)
 	// creo una particula con forma de capsula y unas dimensiones
 	particle = new Particle(CreateShape(PxCapsuleGeometry(5, 3)));
 	particle->setMass(1);                 // masa = 1
-	particle->setPosition(0, 20, 0);      // lo pongo en la posicion deseada
+	particle->setPosition(30, 20, 0);      // lo pongo en la posicion deseada
 	particle->setVelocity(-10, 0, 0);     // le aplico velocidad para que se mueva de forma constante
 }
 

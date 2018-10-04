@@ -19,6 +19,8 @@ PxMaterial*				gMaterial	= NULL;
 
 PxPvd*                  gPvd        = NULL;
 
+Particle* particle = nullptr;
+
 // Initialize physics engine
 // Add custom code at the end of the function
 void initPhysics(bool interactive)
@@ -35,8 +37,13 @@ void initPhysics(bool interactive)
 
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
-	//creo una particula con, posicion, velocidad, aceleracion, dumping, masa y forma
-	Particle particle(CreateShape(PxCapsuleGeometry(5, 3)));
+	// creo una particula con forma de capsula y unas dimensiones
+	particle = new Particle(CreateShape(PxCapsuleGeometry(5, 3)));
+	particle->setMass(1);                  // masa = 1
+	particle->setPosition(30, 20, 0);      // lo pongo en la posicion deseada
+	particle->setVelocity(-10, 0, 0);      // le aplico velocidad
+	particle->setAcceleration(-20, 0, 0);  // le aplico aceleracion constante
+	particle->setDamping(0.9);             // le añado un poco de rozamiento
 }
 
 // Function to configure what happens in each step of physics
@@ -47,6 +54,7 @@ void stepPhysics(bool interactive, double t)
 	PX_UNUSED(interactive);
 	PX_UNUSED(t);
 
+	particle->update(t);
 	// Add custom application code
 	// ...
 }
@@ -66,6 +74,8 @@ void cleanupPhysics(bool interactive)
 	transport->release();
 	
 	gFoundation->release();
+	delete particle;
+	particle = nullptr;
 }
 
 // Function called when a key is pressed
