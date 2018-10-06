@@ -38,12 +38,11 @@ void initPhysics(bool interactive)
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
 	// creo una particula con forma de capsula y unas dimensiones
-	particle = new Particle(CreateShape(PxCapsuleGeometry(5, 3)));
+	particle = new Particle(CreateShape(PxSphereGeometry(3)));
 	particle->setMass(1);                  // masa = 1
 	particle->setPosition(30, 20, 0);      // lo pongo en la posicion deseada
-	particle->setDirection(-1, 0, 0);
-	particle->setVelocity(10);             // le aplico velocidad
-	particle->setAcceleration(-20, 0, 0);  // le aplico aceleracion constante
+	particle->setVelocity(-10, 0, 0);      // le aplico velocidad
+	particle->setAcceleration(-100, 0, 0);  // le aplico aceleracion constante
 	particle->setDamping(0.9);             // le añado un poco de rozamiento
 }
 
@@ -93,8 +92,8 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		Vector3 pos = GetCamera()->getEye();
 		Vector3 dir = GetCamera()->getDir();
 		particle->setPosition(pos.x, pos.y - 10, pos.z);
-		particle->setDirection(dir);
-		particle->setAcceleration(dir*200);
+		particle->setVelocityDirection(dir);
+		particle->setAccelerationDirection(dir);
 		break;
 	}
 	default:
