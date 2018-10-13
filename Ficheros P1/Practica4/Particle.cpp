@@ -1,12 +1,14 @@
 #include "Particle.h"
 
-
 // la constructora de RenderItem recibe una forma, un transform que engloba una posicion y una orientacion
 // y un Vector3 para el color
 
-Particle::Particle(physx::PxShape* _shape, Vector3 p_, Vector3 v_, Vector3 a_, float damping_, int inverse_mass_, float maxRec) :
-	p(p_), posIni(p_), v(v_), a(a_), damping(damping_), inverse_mass(inverse_mass_), transform(p), maxRecorrido(maxRec),
-	RenderItem(_shape, &transform, Vector3(1.0, 4.0, 3.0)) {}
+Particle::Particle(RenderItem* renderItem_, Vector3 p_, Vector3 v_, Vector3 a_, float damping_, int inverse_mass_, float maxRec) :
+	renderItem(renderItem_), p(p_), posIni(p_), v(v_), a(a_), damping(damping_), inverse_mass(inverse_mass_), transform(p), maxRecorrido(maxRec) 
+{
+	renderItem->addReference();          // le suma 1 a las referencias que apuntan a renderItem (como un smartPtr)
+	renderItem->transform = &transform;
+}
 
 
 void Particle::integrate(float t)       // actualiza los parametros de particula
@@ -36,6 +38,6 @@ inline void Particle::setAccelerationDirection(float x, float y, float z)
 inline void Particle::setActive(bool act) 
 { 
 	active = act; 
-	if (!active) DeregisterRenderItem(this);  // si la hemos desactivado no se pinta
-	else RegisterRenderItem(this);            // si la hemos activado volvemos a pintarla
+	if (!active) DeregisterRenderItem(renderItem);  // si la hemos desactivado no se pinta
+	else RegisterRenderItem(renderItem);            // si la hemos activado volvemos a pintarla
 }

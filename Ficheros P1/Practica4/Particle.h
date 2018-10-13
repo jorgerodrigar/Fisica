@@ -2,9 +2,10 @@
 #include "RenderUtils.hpp"
 
 #pragma once
-class Particle: public RenderItem            // clase particula, hereda de RenderItem para poder dibujarse
+class Particle
 {
 private:
+	RenderItem* renderItem;                  // atributo que dibujara la representacion de la particula
 	Vector3 p, posIni;                       // posicion    
 	float maxRecorrido;                      // recorrido maximo que recorre antes de ser desactivada
 	Vector3 v;                               // velocidad 
@@ -16,7 +17,7 @@ private:
 
 	void integrate(float t);                 // actualiza los parametros de particula
 public:
-	Particle(physx::PxShape* _shape, Vector3 p_ = { 0.0, 0.0, 0.0 }, Vector3 v_ = { 0.0, 0.0, 0.0 },
+	Particle(RenderItem* renderItem_, Vector3 p_ = { 0.0, 0.0, 0.0 }, Vector3 v_ = { 0.0, 0.0, 0.0 },
 		Vector3 a_ = { 0.0, 0.0, 0.0 }, float damping_ = 0.95, int inverse_mass_ = 1, float maxRec = 200);
 
 	void update(float t) { integrate(t); }
@@ -64,6 +65,6 @@ public:
 	inline int getMass() { return 1 / inverse_mass; }
 	inline bool getActive() { return active; }
 
-	~Particle() {}
+	~Particle() { renderItem->release(); }    // le resta 1 a las referencias que apuntan a renderItem (como un smartPtr)
 };
 

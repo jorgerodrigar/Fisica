@@ -7,18 +7,25 @@ class Pool {                                   // clase que crea una Pool de ele
 private:
 	std::vector<T*> elementos;                 // vector de elementos
 	float vel, acc, damping;                   // atributos que tendran los elementos
-	physx::PxShape* shape;
+	physx::PxShape* shape = nullptr;
 
 	T* getElement() {                          // devuelve el primer elemento de la Pool que este desactivado
 		int i = 0;                             // de no encontrarlo devuelve uno nuevo
 		while (i < elementos.size() && elementos[i]->getActive())i++;
 		if (i < elementos.size())return elementos[i];
 		else {
-			T* elemento = new T(shape);
-			elemento->setActive(false);
-			elementos.push_back(elemento);
+			elementos.push_back(CreateElement());
 			return elementos[elementos.size() - 1];
 		}
+	}
+
+	T* CreateElement() {
+		if (shape == nullptr)shape = CreateShape(PxSphereGeometry(1));          // en caso de no haber establecido ningun shape creamos una esfera por defecto
+		RenderItem* renderItem = new RenderItem(shape, Vector3(1.0, 4.0, 3.0)); // creamos el item que representara graficamente al elemento
+		T* elemento = new T(renderItem);                                        // creamos el elemento
+		elemento->setActive(false);                                             // lo desactivamos
+		shape->release();                                                       // liberamos el shape
+		return elemento;
 	}
 
 public:
