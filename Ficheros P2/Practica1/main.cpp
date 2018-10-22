@@ -22,9 +22,9 @@ PxPvd*                  gPvd        = NULL;
 
 Pool<Particle> pool;
 
-float tiempo_transcurrido = 0;
+float last_time = 0;
 float next_time = 0;
-
+const float timeShoot = 0.01; // tiempo que queremos que pase entre particula lanzada y su siguiente (en el sistema de particulas)
 
 // Initialize physics engine
 // Add custom code at the end of the function
@@ -46,7 +46,7 @@ void initPhysics(bool interactive)
 }
 
 // sistema de particulas->salen todas del mismo punto con direccion aleatoria (siempre hacia arriba)
-void ParticleSystem(float vel = 100) {
+void ParticleSystem(float vel = 75) {
 	float x, y, z;
 	int signoX, signoZ;
 	x = rand() % 100 + 1;
@@ -68,10 +68,10 @@ void stepPhysics(bool interactive, double t)
 	PX_UNUSED(interactive);
 	PX_UNUSED(t);
 
-	tiempo_transcurrido += t;
-	if (tiempo_transcurrido > next_time) {
+	last_time += t;
+	if (last_time > next_time) {
 		ParticleSystem();
-		next_time = tiempo_transcurrido + 1;
+		next_time = last_time + timeShoot;
 	}
 	pool.Update(t);
 }
