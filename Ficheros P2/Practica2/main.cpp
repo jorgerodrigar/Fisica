@@ -22,6 +22,7 @@ PxMaterial*				gMaterial	= NULL;
 PxPvd*                  gPvd        = NULL;
 
 Pool<Particle> pool;
+FireWorkRule* rule1;
 
 float last_time = 0;
 float next_time = 0;
@@ -59,9 +60,9 @@ void ParticleSystem(float vel = 75) {
 	if (signoZ == 0)z = -z;
 	pool.Shoot({ 0, 10, 0 }, { x, y, z });
 	pool.setVel(vel);*/
-	FireWorkRule rule;
-	rule.setParameters(AZUL, { -5, 25, -5 }, { 5, 28, 5 }, 0.1);
-	rule.create(5);
+
+	rule1->setParameters(AZUL, { -5, 25, -5 }, { 5, 28, 5 }, 0.1);
+	rule1->create(5);
 }
 
 // Function to configure what happens in each step of physics
