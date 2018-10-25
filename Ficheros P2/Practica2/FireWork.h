@@ -1,8 +1,6 @@
 #pragma once
 #include "Particle.h"
 
-struct FireWorkRule;
-
 enum Tipo {
 	AZUL,
 	ROJO,
@@ -20,22 +18,21 @@ private:
 	void initFireWorkRules();
 
 public:
-	FireWork(Tipo type_, int numOfSons_) :type(type_) {
+	FireWork(RenderItem* renderItem) :Particle(renderItem) {}
+
+	virtual void update(float t);
+
+	inline void setType(Tipo type_) { 
+		type = type_; 
 		if (type == AZUL)color = { 073, 103, 141 };
 		else if (type == ROJO)color = { 203, 040, 033 };
 		else color = { 255, 255, 0 };
-		shape = CreateShape(physx::PxSphereGeometry(1));
-
-		RenderItem* renderItem = new RenderItem(shape, color);
-
-		numOfSons = numOfSons_;
-
-		initFireWorkRules();
-
-		Particle::Particle(renderItem);
 	}
 
-	virtual void update(float t);
+	inline void setCount(int count_) {
+		numOfSons = count_;
+		initFireWorkRules();
+	}
 
 	virtual ~FireWork() {}
 };

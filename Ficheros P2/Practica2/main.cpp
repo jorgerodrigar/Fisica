@@ -21,8 +21,8 @@ PxMaterial*				gMaterial	= NULL;
 
 PxPvd*                  gPvd        = NULL;
 
-Pool<Particle> pool;
-FireWorkRule* rule1;
+Pool<FireWork> pool;
+FireWorkRule* rule1 = new FireWorkRule();
 
 float last_time = 0;
 float next_time = 0;

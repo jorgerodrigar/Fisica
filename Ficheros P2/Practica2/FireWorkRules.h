@@ -22,6 +22,8 @@ private:
 public:
 	std::vector<Payload>cargas;
 
+	FireWorkRule() {}
+
 	void setParameters(Tipo type_, const Vector3& minVelocity_,
 		const Vector3& maxVelocity_, float damping_) {
 		type = type_;
