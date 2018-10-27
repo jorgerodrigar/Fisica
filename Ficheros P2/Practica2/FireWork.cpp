@@ -3,21 +3,15 @@
 
 FireWorkRule rule;
 
-void FireWork::initFireWorkRules() {
-	rule.setParameters(type, { -5, 25, -5 }, { 5, 28, 5 }, damping);
-	Payload carga;
-
-	for (int i = 0; i < numOfSons; i++) {
-		int numOfFollowingSons = rand() % 6;
-		carga.set(typeOfSon, numOfFollowingSons);
-		rule.cargas.push_back(carga);
-	}
+bool FireWork::update(float t) {
+	Particle::update(t);
+	return getActive();
 }
 
-void FireWork::update(float t) {
-	if (!getActive()) {
-		for (int i = 0; i < rule.cargas.size(); i++) {
-			rule.create(rule.cargas[i].count);
-		}
-	}
+// establece el tipo y el color correspondiente
+inline void FireWork::setType(Tipo type_) { 
+	type = type_;
+	if (type == AZUL)color = { 073, 103, 141 };
+	else if (type == ROJO)color = { 203, 040, 033 };
+	else color = { 255, 255, 0 };
 }

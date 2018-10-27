@@ -7,7 +7,7 @@
 #include "core.hpp"
 #include "Particle.h"
 #include "Pool.h"
-#include "FireWorkRules.h"
+#include "FireWorkManager.h"
 
 using namespace physx;
 
@@ -22,7 +22,7 @@ PxMaterial*				gMaterial	= NULL;
 PxPvd*                  gPvd        = NULL;
 
 Pool<FireWork> pool;
-FireWorkRule* rule1 = new FireWorkRule();
+FireWorkManager* fireworkManager;
 
 float last_time = 0;
 float next_time = 0;
@@ -45,6 +45,8 @@ void initPhysics(bool interactive)
 	gMaterial = gPhysics->createMaterial(0.5f, 0.5f, 0.6f);
 
 	pool.setShape(CreateShape(PxSphereGeometry(1)));  //le inidico a la Pool la geometria que quiero que lance
+
+	fireworkManager = new FireWorkManager();
 }
 
 // sistema de particulas->salen todas del mismo punto con direccion aleatoria (siempre hacia arriba)
@@ -60,9 +62,6 @@ void ParticleSystem(float vel = 75) {
 	if (signoZ == 0)z = -z;
 	pool.Shoot({ 0, 10, 0 }, { x, y, z });
 	pool.setVel(vel);*/
-
-	rule1->setParameters(AZUL, { -5, 25, -5 }, { 5, 28, 5 }, 0.1);
-	rule1->create(5);
 }
 
 // Function to configure what happens in each step of physics
@@ -79,6 +78,7 @@ void stepPhysics(bool interactive, double t)
 		next_time = last_time + timeShoot;
 	}
 	pool.Update(t);
+	fireworkManager->FireworksUpdate(t);
 }
 
 // Function to clean data
