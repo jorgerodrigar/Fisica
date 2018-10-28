@@ -21,12 +21,12 @@ PxMaterial*				gMaterial	= NULL;
 
 PxPvd*                  gPvd        = NULL;
 
-Pool<Particle> pool;
-FireWorkManager* fireworkManager = nullptr;
+Pool<Particle> pool;                        // pool de particulas
+FireWorkManager* fireworkManager = nullptr; // gestor de fuegos artificiales
 
 float last_time = 0;
 float next_time = 0;
-const float timeShoot = 100; // tiempo que queremos que pase entre particula lanzada y su siguiente (en el sistema de particulas)
+const float timeShoot = 1; // tiempo que queremos que pase entre particula lanzada y su siguiente (en el sistema de particulas)
 
 // Initialize physics engine
 // Add custom code at the end of the function
@@ -51,7 +51,7 @@ void initPhysics(bool interactive)
 
 // sistema de particulas->salen todas del mismo punto con direccion aleatoria (siempre hacia arriba)
 void ParticleSystem(float vel = 75) {
-	/*float x, y, z;
+	float x, y, z;
 	int signoX, signoZ;
 	x = rand() % 100 + 1;
 	y = rand() % 100 + 1;
@@ -61,7 +61,7 @@ void ParticleSystem(float vel = 75) {
 	if (signoX == 0)x = -x;
 	if (signoZ == 0)z = -z;
 	pool.Shoot({ 0, 10, 0 }, { x, y, z });
-	pool.setVel(vel);*/
+	pool.setVel(vel);
 }
 
 // Function to configure what happens in each step of physics
@@ -74,7 +74,7 @@ void stepPhysics(bool interactive, double t)
 
 	last_time += t;
 	if (last_time > next_time) {
-		ParticleSystem();
+		fireworkManager->FireworksCreate(AMARILLO);
 		next_time = last_time + timeShoot;
 	}
 	pool.Update(t);
@@ -109,12 +109,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		break;
 	case ' ':
 		break;
-	case 'F': {
-		// disparo una nueva particula con la pos y dir de la camara
-		pool.Shoot(GetCamera()->getEye(), GetCamera()->getDir());
-		break;
-	}
-	case 'T': {
+	case 'F': { // al pulsar F se crea un fuego artificial que va hacia arriba
 		fireworkManager->FireworksCreate(AMARILLO);
 		break;
 	}
