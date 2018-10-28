@@ -21,8 +21,8 @@ PxMaterial*				gMaterial	= NULL;
 
 PxPvd*                  gPvd        = NULL;
 
-Pool<FireWork> pool;
-FireWorkManager* fireworkManager;
+Pool<Particle> pool;
+FireWorkManager* fireworkManager = nullptr;
 
 float last_time = 0;
 float next_time = 0;
@@ -88,7 +88,8 @@ void cleanupPhysics(bool interactive)
 	PX_UNUSED(interactive);
 
 	// Add custom application code
-	// ...
+	delete fireworkManager;
+	fireworkManager = nullptr;
 
 	gPhysics->release();	
 	PxPvdTransport* transport = gPvd->getTransport();
@@ -111,6 +112,10 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	case 'F': {
 		// disparo una nueva particula con la pos y dir de la camara
 		pool.Shoot(GetCamera()->getEye(), GetCamera()->getDir());
+		break;
+	}
+	case 'T': {
+		fireworkManager->FireworksCreate(AMARILLO);
 		break;
 	}
 	default:

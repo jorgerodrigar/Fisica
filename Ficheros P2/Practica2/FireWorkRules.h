@@ -19,18 +19,23 @@ struct Payload {
 struct FireWorkRule {
 private:                // parametros del FireWork
 	Tipo type = AZUL;
-	Vector3 minVelocity;
-	Vector3 maxVelocity;
+	float minAge = 0;
+	float maxAge = 0;
+	Vector3 minVelocity = { 0, 0, 0 };
+	Vector3 maxVelocity = { 0, 0, 0 };
 	float damping = 0.1;
 	const Vector3 GRAVITY = { 0.0, -10.0, 0.0 };
-	std::vector<Payload>cargas;
 
 public:
+	std::vector<Payload>cargas;  // numero de cargas que se generaran con esta regla
+
 	FireWorkRule() {}
 
-	void setParameters(Tipo type_, const Vector3& minVelocity_,
+	void setParameters(Tipo type_, float minAge_, float maxAge_, const Vector3& minVelocity_,
 		const Vector3& maxVelocity_, float damping_) {
 		type = type_;
+		minAge = minAge_;
+		maxAge = maxAge_;
 		minVelocity = minVelocity_;
 		maxVelocity = maxVelocity_;
 		damping = damping_;
@@ -39,6 +44,7 @@ public:
 	// crea un nuevo FireWork 
 	void create(Tipo type, FireWork* firework, FireWork* fParent = NULL)const {
 		firework->setType(type);
+		firework->setAge(rand() % (int)maxAge + (int)minAge);
 
 		Vector3 vel;
 		float velX = 0, velY = 0, velZ = 0;
@@ -66,5 +72,4 @@ public:
 	}
 
 	inline Tipo getType() { return type; }
-	inline std::vector<Payload> getCargas() { return cargas; }
 };
