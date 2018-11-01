@@ -2,7 +2,7 @@
 
 FireWorkManager::FireWorkManager() {
 	registry = new ParticleForceRegistry();
-	gravity = new GravityForce({ 0, -100, 0 });
+	gravity = new GravityForce({ 0, -10, 0 });
 	rules.resize(3); // habra tres tipos de reglas
 	initFireworkRules();
 }

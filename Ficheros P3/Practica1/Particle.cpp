@@ -45,6 +45,12 @@ inline void Particle::setAccelerationDirection(float x, float y, float z)
 inline void Particle::setActive(bool act) 
 { 
 	active = act; 
-	if (!active) DeregisterRenderItem(renderItem);  // si la hemos desactivado no se pinta
-	else RegisterRenderItem(renderItem);            // si la hemos activado volvemos a pintarla
+	if (!active && registered) {     // si la hemos desactivado y esta registrada no se pinta
+		DeregisterRenderItem(renderItem);
+		registered = false;
+	}
+	else if (active && !registered){ // si la hemos activado y no esta registrada volvemos a pintarla
+		RegisterRenderItem(renderItem);
+		registered = true;
+	}
 }

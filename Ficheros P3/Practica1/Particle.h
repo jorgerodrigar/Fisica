@@ -17,6 +17,7 @@ protected:
 	int inverse_mass;                        // masa inversa. Si es 0 la masa sera infinita
 	physx::PxTransform transform;            // transform que contiene su posicion y orientacion actuales
 	bool active = true;                      // indica si la particula debe ser actualizada y pintada
+	bool registered = true;                  // indica si la particula esta registrada para pintarse
 
 	// metodos
 	void integrate(float t);                 // actualiza los parametros de particula
