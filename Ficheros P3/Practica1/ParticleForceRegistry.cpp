@@ -12,8 +12,8 @@ void ParticleForceRegistry::remove(Particle* particle, ParticleForceGenerator* f
 }
 
 void ParticleForceRegistry::clear() {
-	for (auto it = registrations.begin(); it != registrations.end(); it++)
-		registrations.erase(it);
+	for (int i = 0; i < registrations.size(); i++)
+		registrations.pop_back();
 }
 
 void ParticleForceRegistry::updateForces(float t) {

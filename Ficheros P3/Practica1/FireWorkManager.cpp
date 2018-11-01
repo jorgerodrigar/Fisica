@@ -2,7 +2,7 @@
 
 FireWorkManager::FireWorkManager() {
 	registry = new ParticleForceRegistry();
-	//gravity = new GravityForce({ 0, -100, 0 });
+	gravity = new GravityForce({ 0, -100, 0 });
 	rules.resize(3); // habra tres tipos de reglas
 	initFireworkRules();
 }
@@ -36,7 +36,7 @@ FireWork* FireWorkManager::AllocNewFirework() {
 	firework->setType(AMARILLO);
 	firework->setMaxRecorrido(500);
 	fireworks.push_back(firework);
-	registry->add(firework, new GravityForce({ 0, -GRAVITY, 0 }));
+	registry->add(firework, gravity);
 	return firework;
 }
 
@@ -68,6 +68,10 @@ void FireWorkManager::FireworksCreate(Tipo type, FireWork* parent)
 
 FireWorkManager::~FireWorkManager() {
 	delete registry;
+	registry = nullptr;
+	delete gravity;
+	gravity = nullptr;
+
 	for (auto it = fireworks.begin(); it < fireworks.end(); it++) {
 		delete (*it);
 		(*it) = nullptr;

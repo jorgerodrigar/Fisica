@@ -11,8 +11,7 @@ private:
 	std::vector<FireWorkRule> rules;           // reglas que seguiran los fireWorks
 	std::vector<FireWork*> fireworks;          // vector de fireWorks
 	ParticleForceRegistry* registry = nullptr; // resgistro donde se guardara cada fireWork con el generador de fuerzas que le afecte
-	const float GRAVITY = 10.0;               // valor de la garvedad que les afectara a todas las particulas en -y
-	//GravityForce* gravity;
+	GravityForce* gravity;                     // generador de gravedad (todos los fireWork lo tendran)
 
 	void initFireworkRules();                                   // inicializa las reglas que tendran los fuegos artificiales
 	void create(Tipo type, unsigned count, FireWork* firework); // crea count fuegos de tipo type y padre firework
