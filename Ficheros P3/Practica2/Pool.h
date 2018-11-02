@@ -46,6 +46,8 @@ public:
 		elemento->setActive(true);            // lo activo para que se actualice y pinte
 	}
 
+	T* getLastElement() { return elementos[elementos.size() - 1]; }  // devuelve el ultimo elemento añadido a la pool
+
 	void setShape(physx::PxShape* shape_) { shape = shape_; }
 	void setVel(float v) { vel = v; }
 	void setAcc(float a) { acc = a; }

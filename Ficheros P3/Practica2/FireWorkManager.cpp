@@ -1,11 +1,7 @@
 #include "FireWorkManager.h"
 
 FireWorkManager::FireWorkManager() {
-	registry = new ParticleForceRegistry();
-	gravityA = new GravityForce({ 0, -10, 0 });                // habra dos tipos de gravedad
-	gravityB = new GravityForce({ 0, -1, 0 });
-	windForce = new WindForce({-100, 0, 0}, 30, { 0, 40, 0 }); // uno de viento
-	rules.resize(3);                                           // y tres de reglas
+	rules.resize(3);       // habra tres tipos de reglas
 	initFireworkRules();
 }
 
@@ -55,8 +51,6 @@ void FireWorkManager::FireworksUpdate(float t) {
 			}
 		}
 	}
-
-	registry->updateForces(t);
 }
 
 void FireWorkManager::FireworksCreate(Tipo type, FireWork* parent)
@@ -65,22 +59,14 @@ void FireWorkManager::FireworksCreate(Tipo type, FireWork* parent)
 	FireWork* newFirework = AllocNewFirework();
 	rule->create(type, newFirework, parent);
 
-	// dependiendo del tipo que sea el newFirework le afectara una gravedad u otra
-	if (type == AMARILLO)registry->add(newFirework, gravityB);
-	else registry->add(newFirework, gravityA);
-	registry->add(newFirework, windForce); //a todas les afecta el viento
+	// si tenemos un registro, le aplicamos a cada newFirework todas las fuerzas que tengamos
+	if (registry != nullptr) {
+		for (int i = 0; i < forceGenerators.size(); i++)
+			registry->add(newFirework, forceGenerators[i]);
+	}
 }
 
 FireWorkManager::~FireWorkManager() {
-	delete registry;
-	registry = nullptr;
-	delete gravityA;
-	gravityA = nullptr;
-	delete gravityB;
-	gravityB = nullptr;
-	delete windForce;
-	windForce = nullptr;
-
 	for (auto it = fireworks.begin(); it < fireworks.end(); it++) {
 		delete (*it);
 		(*it) = nullptr;
