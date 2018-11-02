@@ -2,9 +2,10 @@
 
 FireWorkManager::FireWorkManager() {
 	registry = new ParticleForceRegistry();
-	gravityA = new GravityForce({ 0, -10, 0 }); // habra dos tipos de gravedad
+	gravityA = new GravityForce({ 0, -10, 0 });                // habra dos tipos de gravedad
 	gravityB = new GravityForce({ 0, -1, 0 });
-	rules.resize(3);                            // y tres tipos de reglas
+	windForce = new WindForce({-100, 0, 0}, 30, { 0, 40, 0 }); // uno de viento
+	rules.resize(3);                                           // y tres de reglas
 	initFireworkRules();
 }
 
@@ -32,7 +33,7 @@ FireWorkRule* FireWorkManager::GetRuleFromType(Tipo type) {
 }
 
 FireWork* FireWorkManager::AllocNewFirework() {
-	RenderItem* renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1)), Vector3(1.0, 4.0, 3.0));
+	RenderItem* renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1)), Vector4(1.0, 4.0, 3.0, 0.0));
 	FireWork* firework = new FireWork(renderItem);
 	firework->setMaxRecorrido(500);
 	fireworks.push_back(firework);
@@ -67,6 +68,7 @@ void FireWorkManager::FireworksCreate(Tipo type, FireWork* parent)
 	// dependiendo del tipo que sea el newFirework le afectara una gravedad u otra
 	if (type == AMARILLO)registry->add(newFirework, gravityB);
 	else registry->add(newFirework, gravityA);
+	registry->add(newFirework, windForce); //a todas les afecta el viento
 }
 
 FireWorkManager::~FireWorkManager() {
@@ -76,6 +78,8 @@ FireWorkManager::~FireWorkManager() {
 	gravityA = nullptr;
 	delete gravityB;
 	gravityB = nullptr;
+	delete windForce;
+	windForce = nullptr;
 
 	for (auto it = fireworks.begin(); it < fireworks.end(); it++) {
 		delete (*it);

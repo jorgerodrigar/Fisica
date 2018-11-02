@@ -5,14 +5,16 @@
 #include <iostream>
 #include "ParticleForceRegistry.h"
 #include "GravityForce.h"
+#include "WindForce.h"
 
 class FireWorkManager {                        // clase que almacena y gestiona los fuegos artificiales y sus reglas
 private:
 	std::vector<FireWorkRule> rules;           // reglas que seguiran los fireWorks
 	std::vector<FireWork*> fireworks;          // vector de fireWorks
 	ParticleForceRegistry* registry = nullptr; // resgistro donde se guardara cada fireWork con el generador de fuerzas que le afecte
-	GravityForce* gravityA;                    // generador de gravedad (todos los fireWork de tipo A lo tendran)
-	GravityForce* gravityB;                    // generador de gravedad (todos los fireWork de tipo B lo tendran)
+	GravityForce* gravityA = nullptr;          // generador de gravedad (todos los fireWork de tipo A lo tendran)
+	GravityForce* gravityB = nullptr;          // generador de gravedad (todos los fireWork de tipo B lo tendran)
+	WindForce* windForce = nullptr;            // generador de viento (todos los fireWork que esten en su espacio de accion se veran afectados por el)
 
 	void initFireworkRules();                                   // inicializa las reglas que tendran los fuegos artificiales
 	void create(Tipo type, unsigned count, FireWork* firework); // crea count fuegos de tipo type y padre firework
