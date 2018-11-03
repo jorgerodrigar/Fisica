@@ -51,6 +51,26 @@ void FireWorkManager::FireworksUpdate(float t) {
 			}
 		}
 	}
+	/*while (!nuevosElementos.empty()) {
+		fireworks.push_back(nuevosElementos.front());
+		nuevosElementos.pop();
+	}
+
+	for (auto it = fireworks.begin(); it != fireworks.end(); ++it) {
+		FireWork* firework = (*it);
+		if (firework->getActive()) {
+			if (!firework->update(t)) {
+				firework->setActive(false);
+				FireWorkRule* rule = GetRuleFromType(firework->getType());
+				for (auto itPlayload = rule->cargas.begin(); itPlayload != rule->cargas.end(); itPlayload++)
+				{
+					Payload payload = (*itPlayload);
+					create(payload.type, payload.count, firework);
+				}
+			}
+		}
+		else it = fireworks.erase(it);
+	}*/
 }
 
 void FireWorkManager::FireworksCreate(Tipo type, FireWork* parent)
