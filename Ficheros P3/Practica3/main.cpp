@@ -45,7 +45,7 @@ void initVariables() {      // inicializa todas mis variables
 
 	registry = new ParticleForceRegistry();          // registro de particulas con las fuerzas que las afectan
 	gravity = new GravityForce({ 0, -5, 0 });        // fuerzas de gravedad y viento (este ultimo solo afectara a las que esten en su radio de accion)
-	//windForce = new WindForce({ -100, 0, 0 }, 30, { 0, 60, 0 }); // vector fuerza, radio, posicion
+	//windForce = new WindForce({ -100, 0, 0 }, 30, { 0, 60, 0 });       // vector fuerza, radio, posicion
 	explosion = new ExplosionForce(20000, 30, { 0, 40, 0 }, 30);       // modulo fuerza, radio, posicion y tiempo hasta proxima explosion (en milisegundos)
 
 	fireworkManager = new FireWorkManager();         // creo el gestor de fuegos artificiales
@@ -53,6 +53,11 @@ void initVariables() {      // inicializa todas mis variables
 	fireworkManager->addForceGenrator(gravity);      // y le digo que a los fireWork les van a afectar estas fuerzas
 	//fireworkManager->addForceGenrator(windForce);
 	fireworkManager->addForceGenrator(explosion);
+
+	pool.setForcesRegistry(registry);                // lo mismo con el sistema de partículas
+	pool.addForceGenrator(gravity);
+	//pool.addForceGenrator(windForce);
+	pool.addForceGenrator(explosion);
 }
 
 void updateAll(float t) {   // actualiza todos mis sistemas
@@ -74,11 +79,6 @@ void ParticleSystem(float vel = 75) {
 	if (signoZ == 0)z = -z;
 	pool.Shoot({ 0, 10, 0 }, { x, y, z });
 	pool.setVel(vel);
-
-	// a cada una le afectara la gravedad, el viento y explosiones
-	registry->add(pool.getLastElement(), gravity);
-	//registry->add(pool.getLastElement(), windForce);
-	registry->add(pool.getLastElement(), explosion);
 }
 
 void deleteAll() {   // borra todas mis variables
@@ -163,7 +163,13 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		fireworkManager->FireworksCreate(AMARILLO);
 		break;
 	}
-	case 'E': { // al pulsar E la fuerza de explosion explota
+	case 'E': { // al pulsar E la fuerza de explosion explota en su posicion inicial
+		explosion->setInitialPosition();
+		explosion->Explota();
+		break;
+	}
+	case 'R': { // al pulsar R la fuerza de explosion explota en la posicion en la que estemos mirando
+		explosion->setPosition(GetCamera()->getEye() + GetCamera()->getDir() * (GetCamera()->getEye().z + explosion->getRadio()));
 		explosion->Explota();
 		break;
 	}

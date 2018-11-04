@@ -1,6 +1,8 @@
 #pragma once
 #include "core.hpp"
 #include <vector>
+#include "ParticleForceRegistry.h"
+#include "ParticleForceGenerator.h"
 
 template <typename T>
 class Pool {                                   // clase que crea una Pool de elementos de tipo T
@@ -8,6 +10,8 @@ private:
 	std::vector<T*> elementos;                 // vector de elementos
 	float vel, acc, damping;                   // atributos que tendran los elementos
 	physx::PxShape* shape = nullptr;
+	ParticleForceRegistry* registry = nullptr;              // resgistro donde se guardara cada elemento con el generador de fuerzas que le afecte
+	std::vector<ParticleForceGenerator*> forceGenerators;   // vector de fuerzas que se aplican a los elementos
 
 	T* getElement() {                          // devuelve el primer elemento de la Pool que este desactivado
 		int i = 0;                             // de no encontrarlo devuelve uno nuevo
@@ -25,6 +29,12 @@ private:
 		T* elemento = new T(renderItem);                                             // creamos el elemento
 		elemento->setActive(false);                                                  // lo desactivamos
 		shape->release();                                                            // liberamos el shape
+
+		if (registry != nullptr) {                                                   // si tenemos un registro, añadimos a el el nuevo elemento creado con todos
+			for (int i = 0; i < forceGenerators.size(); i++)                         // los generadores que le afecten
+				registry->add(elemento, forceGenerators[i]);
+		}
+
 		return elemento;
 	}
 
@@ -52,6 +62,8 @@ public:
 	void setVel(float v) { vel = v; }
 	void setAcc(float a) { acc = a; }
 	void setDamp(float damp) { damping = damp; }
+	inline void setForcesRegistry(ParticleForceRegistry* registry_) { registry = registry_; }                 // establece un registro
+	inline void addForceGenrator(ParticleForceGenerator* generator) { forceGenerators.push_back(generator); } // añade una fuerza
 
 	virtual ~Pool() {
 		for (int i = 0; i < elementos.size(); i++) {

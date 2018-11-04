@@ -13,7 +13,6 @@ private:
 	std::vector<FireWork*> fireworks;                           // vector de fireWorks
 	ParticleForceRegistry* registry = nullptr;                  // resgistro donde se guardara cada fireWork con el generador de fuerzas que le afecte
 	std::vector<ParticleForceGenerator*> forceGenerators;       // vector de fuerzas que se aplican a los fireWork
-	std::queue<FireWork*> nuevosElementos;
 
 	void initFireworkRules();                                   // inicializa las reglas que tendran los fuegos artificiales
 	void create(Tipo type, unsigned count, FireWork* firework); // crea count fuegos de tipo type y padre firework

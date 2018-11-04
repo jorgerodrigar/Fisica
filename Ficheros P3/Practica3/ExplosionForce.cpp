@@ -1,7 +1,7 @@
 #include "ExplosionForce.h"
 
 ExplosionForce::ExplosionForce(float force, float radio_, Vector3 pos, float timeExplosion_) : FORCE(force),
-radio(radio_), transform(pos), timeExplosion(timeExplosion_), last_time(0), next_time(0) {
+radio(radio_), transform(pos), posIni(pos), timeExplosion(timeExplosion_), last_time(0), next_time(0) {
 	renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(radio)), Vector4(0.0, 1.0, 0.0, 0.0));
 	renderItem->addReference();
 	renderItem->transform = &transform;
@@ -22,7 +22,7 @@ void ExplosionForce::aplicaFuerza(Particle* particle) {
 
 	if (dist.magnitude() < radio) {
 		forceVec = ((dist / dist.magnitude()*FORCE)/dist.magnitude());  // mandara a cada particula lejos del centro de la explosion
-		particle->addForce(forceVec*particle->getMass());
+		particle->addForce(forceVec*particle->getMass());               // la fuerza sera menor a medida que la particula se aleja del centro
 	}
 }
 

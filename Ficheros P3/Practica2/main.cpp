@@ -74,6 +74,10 @@ void initVariables() {
 	fireworkManager->setForcesRegistry(registry);    // le establezco el registro de fuerzas
 	fireworkManager->addForceGenrator(gravity);      // y le digo que a los fireWork les van a afectar estas fuerzas
 	fireworkManager->addForceGenrator(windForce);
+
+	pool.setForcesRegistry(registry);                // lo mismo con el sistema de partículas
+	pool.addForceGenrator(gravity);
+	pool.addForceGenrator(windForce);
 }
 
 void updateAll(float t) {
@@ -95,10 +99,6 @@ void ParticleSystem(float vel) {
 	if (signoZ == 0)z = -z;
 	pool.Shoot({ 0, 10, 0 }, { x, y, z });
 	pool.setVel(vel);
-
-	// a cada una le afectara la gravedad y el viento
-	registry->add(pool.getLastElement(), gravity);  
-	registry->add(pool.getLastElement(), windForce);
 }
 
 // Function to configure what happens in each step of physics

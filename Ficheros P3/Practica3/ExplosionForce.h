@@ -7,6 +7,7 @@ class ExplosionForce : public ParticleForceGenerator
 private:
 	RenderItem* renderItem = nullptr; // representacion grafica de la zona de accion que tendra la explosion
 	physx::PxTransform transform;
+	Vector3 posIni;                   // posicion inicial del area de la explosion
 	float radio;
 	Vector3 forceVec;                 // vector de la fuerza a aplicar
 	const float FORCE;                // magintud de la fuerza a aplicar
@@ -27,6 +28,11 @@ public:
 	void aplicaFuerza(Particle* particle);    // aplica la fuerza que corresponda a esa particula
 
 	inline void Explota() { if(!explota) explota = true; }  // hace explotar (si puede)
+
+	inline void setPosition(Vector3 pos) { transform.p = pos; }
+	inline void setInitialPosition() { transform.p = posIni; }
+
+	inline float getRadio() { return radio; }
 
 	virtual ~ExplosionForce() { renderItem->release(); }
 };
