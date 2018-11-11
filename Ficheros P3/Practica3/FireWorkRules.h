@@ -55,7 +55,7 @@ public:
 			vel += aux->getVelocityVector();
 		}
 		else {
-			Vector3 start;
+			Vector3 start = { 0.0, 0.0, 0.0 };
 			int x = rand() % 3;
 			start.x = 5.0*x;
 			firework->setPosition(start);

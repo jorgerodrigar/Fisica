@@ -29,11 +29,19 @@ FireWorkRule* FireWorkManager::GetRuleFromType(Tipo type) {
 }
 
 FireWork* FireWorkManager::AllocNewFirework() {
-	RenderItem* renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1)), Vector4(1.0, 4.0, 3.0, 1.0));
-	FireWork* firework = new FireWork(renderItem);
-	firework->setMaxRecorrido(500);
-	fireworks.push_back(firework);
-	return firework;
+	int i = 0;  // busca un firework desactivado y lo devuelve
+	while (i < fireworks.size() && fireworks[i]->getActive())i++;
+	if (i < fireworks.size()) {
+		fireworks[i]->setActive(true);
+		return fireworks[i];
+	}
+	else {      // si no, crea uno nuevo y lo devuelve
+		RenderItem* renderItem = new RenderItem(CreateShape(physx::PxSphereGeometry(1)), Vector4(1.0, 4.0, 3.0, 1.0));
+		FireWork* firework = new FireWork(renderItem);
+		firework->setMaxRecorrido(500);
+		fireworks.push_back(firework);
+		return firework;
+	}
 }
 
 void FireWorkManager::FireworksUpdate(float t) {
@@ -55,12 +63,14 @@ void FireWorkManager::FireworksUpdate(float t) {
 
 void FireWorkManager::FireworksCreate(Tipo type, FireWork* parent)
 {
+	int size = fireworks.size(); // auxiliar, mas tarde comprobaremos el num de fworks ha aumentado (se ha añadido o se ha reutilizado)
 	FireWorkRule* rule = GetRuleFromType(type);
 	FireWork* newFirework = AllocNewFirework();
 	rule->create(type, newFirework, parent);
 
-	// si tenemos un registro, le aplicamos a cada newFirework todas las fuerzas que tengamos
-	if (registry != nullptr) {
+	// si tenemos un registro y no es un fireWork reutilizado, 
+	// le aplicamos al nuevo newFirework todas las fuerzas que tengamos
+	if (registry != nullptr && fireworks.size() > size) {
 		for (int i = 0; i < forceGenerators.size(); i++)
 			registry->add(newFirework, forceGenerators[i]);
 	}
