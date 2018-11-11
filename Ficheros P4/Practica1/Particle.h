@@ -53,6 +53,9 @@ public:
 	inline void setMass(int mass) { inverse_mass = 1 / mass; }
 	inline void setMaxRecorrido(float maxRec) { maxRecorrido = maxRec; }
 	inline void setActive(bool act);
+	void setShape(float radio){ RenderItem* r = new RenderItem(CreateShape(physx::PxSphereGeometry(1)), Vector4(1.0, 4.0, 3.0, 1.0));
+	renderItem = r;
+	}
 
 	// ----------------------------------------------GETTERS---------------------------------------------------------------
 	// posicion

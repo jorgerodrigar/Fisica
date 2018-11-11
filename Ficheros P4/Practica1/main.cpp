@@ -10,6 +10,7 @@
 #include "GravityForce.h"
 #include "WindForce.h"
 #include "ExplosionForce.h"
+#include "ParticleAnchoredSpring.h"
 
 using namespace physx;
 
@@ -25,13 +26,15 @@ PxPvd*                  gPvd        = NULL;
 
 //-------------------------------------------------MIS VARIABLES--------------------------------------------------------
 
-ParticleSystem particleSystem;              // gestor del sistema de particulas
-FireWorkManager* fireworkManager = nullptr; // gestor de fuegos artificiales
+//ParticleSystem particleSystem;              // gestor del sistema de particulas
+//FireWorkManager* fireworkManager = nullptr; // gestor de fuegos artificiales
 
 ParticleForceRegistry* registry = nullptr;  // resgistro donde se guardara cada particula con el generador de fuerzas que le afecte
 GravityForce* gravity = nullptr;            // generador de gravedad (todas las particulas lo tendran)
 WindForce* windForce = nullptr;             // generador de viento (todas las particulas que esten en su espacio de accion se veran afectadas por el)
 ExplosionForce* explosion = nullptr;        // generador de explosiones (al pulsar la tecla 'e' todas las particulas en su radio se veran afectadas)
+ParticleAnchoredSpring* muelle = nullptr;
+Particle* particle = nullptr;
 
 float last_time = 0;
 float next_time = 0;
@@ -44,8 +47,9 @@ void initVariables() {      // inicializa todas mis variables
 	gravity = new GravityForce({ 0, -5, 0 });        // fuerzas de gravedad y viento (este ultimo solo afectara a las que esten en su radio de accion)
 	//windForce = new WindForce({ -100, 0, 0 }, 30, { 0, 60, 0 });       // vector fuerza, radio, posicion
 	explosion = new ExplosionForce(20000, 30, { 0, 40, 0 }, 30);       // modulo fuerza, radio, posicion y tiempo hasta proxima explosion (en milisegundos)
+	muelle = new ParticleAnchoredSpring(new Vector3(10, 40, 0), 10.0, 10.0);
 
-	fireworkManager = new FireWorkManager();         // creo el gestor de fuegos artificiales
+	/*fireworkManager = new FireWorkManager();         // creo el gestor de fuegos artificiales
 	fireworkManager->setForcesRegistry(registry);    // le establezco el registro de fuerzas
 	fireworkManager->addForceGenrator(gravity);      // y le digo que a los fireWork les van a afectar estas fuerzas
 	//fireworkManager->addForceGenrator(windForce);
@@ -54,18 +58,25 @@ void initVariables() {      // inicializa todas mis variables
 	particleSystem.setForcesRegistry(registry);      // lo mismo con el sistema de partículas
 	particleSystem.addForceGenrator(gravity);
 	//particleSystem.addForceGenrator(windForce);
-	particleSystem.addForceGenrator(explosion);
+	particleSystem.addForceGenrator(explosion);*/
+
+	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(1));
+	RenderItem* renderItem = new RenderItem();
+	particle = new Particle(renderItem);
+	particle->setShape(1);
+	registry->add(particle, muelle);
 }
 
 void updateAll(float t) {   // actualiza todos mis sistemas
-	particleSystem.update(t);
-	fireworkManager->FireworksUpdate(t);
+	//particleSystem.update(t);
+	//fireworkManager->FireworksUpdate(t);
 	registry->updateForces(t);
+	particle->update(t);
 }
 
 void deleteAll() {   // borra todas mis variables
-	delete fireworkManager;
-	fireworkManager = nullptr;
+	//delete fireworkManager;
+	//fireworkManager = nullptr;
 	delete registry;
 	registry = nullptr;
 	delete gravity;
@@ -107,7 +118,7 @@ void stepPhysics(bool interactive, double t)
 
 	last_time += t;
 	if (last_time > next_time) {
-		particleSystem.shoot();   // genera particulas como una "fuente"
+		//particleSystem.shoot();   // genera particulas como una "fuente"
 		next_time = last_time + timeShoot;
 	}
 
@@ -142,7 +153,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	case ' ':
 		break;
 	case 'F': { // al pulsar F se crea un fuego artificial que va hacia arriba
-		fireworkManager->FireworksCreate(AMARILLO);
+		//fireworkManager->FireworksCreate(AMARILLO);
 		break;
 	}
 	case 'E': { // al pulsar E la fuerza de explosion explota en su posicion inicial
