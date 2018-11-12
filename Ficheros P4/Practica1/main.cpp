@@ -46,8 +46,8 @@ void initVariables() {      // inicializa todas mis variables
 	registry = new ParticleForceRegistry();          // registro de particulas con las fuerzas que las afectan
 	gravity = new GravityForce({ 0, -5, 0 });        // fuerzas de gravedad y viento (este ultimo solo afectara a las que esten en su radio de accion)
 	//windForce = new WindForce({ -100, 0, 0 }, 30, { 0, 60, 0 });       // vector fuerza, radio, posicion
-	explosion = new ExplosionForce(20000, 30, { 0, 40, 0 }, 30);       // modulo fuerza, radio, posicion y tiempo hasta proxima explosion (en milisegundos)
-	muelle = new ParticleAnchoredSpring(new Vector3(10, 40, 0), 10.0, 10.0);
+	//explosion = new ExplosionForce(20000, 30, { 0, 40, 0 }, 30);       // modulo fuerza, radio, posicion y tiempo hasta proxima explosion (en milisegundos)
+	muelle = new ParticleAnchoredSpring(new Vector3(0, 10, 0), 0.01, 1);
 
 	/*fireworkManager = new FireWorkManager();         // creo el gestor de fuegos artificiales
 	fireworkManager->setForcesRegistry(registry);    // le establezco el registro de fuerzas
@@ -61,10 +61,10 @@ void initVariables() {      // inicializa todas mis variables
 	particleSystem.addForceGenrator(explosion);*/
 
 	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(1));
-	RenderItem* renderItem = new RenderItem();
+	RenderItem* renderItem = new RenderItem(shape, Vector4(1.0, 4.0, 3.0, 1.0));
 	particle = new Particle(renderItem);
-	particle->setShape(1);
 	registry->add(particle, muelle);
+	shape->release();
 }
 
 void updateAll(float t) {   // actualiza todos mis sistemas
@@ -85,6 +85,10 @@ void deleteAll() {   // borra todas mis variables
 	windForce = nullptr;
 	delete explosion;
 	explosion = nullptr;
+	delete muelle;
+	muelle = nullptr;
+	delete particle;
+	particle = nullptr;
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -152,7 +156,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		break;
 	case ' ':
 		break;
-	case 'F': { // al pulsar F se crea un fuego artificial que va hacia arriba
+	/*case 'F': { // al pulsar F se crea un fuego artificial que va hacia arriba
 		//fireworkManager->FireworksCreate(AMARILLO);
 		break;
 	}
@@ -165,7 +169,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		explosion->setPosition(GetCamera()->getEye() + GetCamera()->getDir() * (GetCamera()->getEye().z + explosion->getRadio()));
 		explosion->Explota();
 		break;
-	}
+	}*/
 	default:
 		break;
 	}
