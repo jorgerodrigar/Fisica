@@ -10,11 +10,25 @@ anchor(anchor_), k(k_), restLength(restLength_), transform(*anchor) {
 }
 
 void ParticleAnchoredSpring::updateForce(Particle* particle, float t) {
-	Vector3 f = particle->getPosition();
-	f -= *anchor;
+	if (getActive()) {
+		Vector3 f = particle->getPosition();
+		f -= *anchor;
 
-	float length = f.normalize();
+		float length = f.normalize();
 
-	f *= -(length*k);
-	particle->addForce(f);
+		f *= -(length*k);
+		particle->addForce(f);
+	}
+}
+
+void ParticleAnchoredSpring::setActive(bool act) {
+	ParticleForceGenerator::setActive(act);
+	if (!active && registered) {     // si la hemos desactivado y esta registrada no se pinta
+		DeregisterRenderItem(renderItem);
+		registered = false;
+	}
+	else if (active && !registered) { // si la hemos activado y no esta registrada volvemos a pintarla
+		RegisterRenderItem(renderItem);
+		registered = true;
+	}
 }

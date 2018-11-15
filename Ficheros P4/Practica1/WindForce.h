@@ -14,6 +14,8 @@ public:
 
 	virtual void updateForce(Particle* particle, float t);
 
+	virtual inline void setActive(bool act);
+
 	virtual ~WindForce() { renderItem->release(); }
 };
 

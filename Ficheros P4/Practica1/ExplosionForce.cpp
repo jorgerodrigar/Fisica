@@ -9,10 +9,12 @@ radio(radio_), transform(pos), posIni(pos), timeExplosion(timeExplosion_), last_
 
 void ExplosionForce::updateForce(Particle* particle, float t) {
 	if (!particle->hasFiniteMass())return;
-
-	if (explota) {       // si explota, iniciamos el contador
-		temporizador(t); // y aplicamos fuerza
-		aplicaFuerza(particle);
+	
+	if (getActive()) {
+		if (explota) {       // si explota, iniciamos el contador
+			temporizador(t); // y aplicamos fuerza
+			aplicaFuerza(particle);
+		}
 	}
 }
 
@@ -33,5 +35,17 @@ void ExplosionForce::temporizador(float t) {
 	if (last_time > next_time) {
 		explota = false;
 		next_time = last_time + timeExplosion;
+	}
+}
+
+void ExplosionForce::setActive(bool act) {
+	ParticleForceGenerator::setActive(act);
+	if (!active && registered) {     // si la hemos desactivado y esta registrada no se pinta
+		DeregisterRenderItem(renderItem);
+		registered = false;
+	}
+	else if (active && !registered) { // si la hemos activado y no esta registrada volvemos a pintarla
+		RegisterRenderItem(renderItem);
+		registered = true;
 	}
 }

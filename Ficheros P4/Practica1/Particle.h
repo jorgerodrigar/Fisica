@@ -20,13 +20,16 @@ protected:
 	bool registered = true;                  // indica si la particula esta registrada para pintarse
 
 	// metodos
-	void integrate(float t);                 // actualiza los parametros de particula
+	void integrate(float t);                 // actualiza los parametros de particula
+
 public:
 	Particle() {}
 	Particle(RenderItem* renderItem_, Vector3 p_ = { 0.0, 0.0, 0.0 }, Vector3 v_ = { 0.0, 0.0, 0.0 },
 		Vector3 a_ = { 0.0, 0.0, 0.0 }, float damping_ = 0.95, int inverse_mass_ = 1, float maxRec = 200);
 
-	void update(float t) { integrate(t); }	inline void clearForce() { force = { 0, 0, 0 }; }      // limpia la fuerza acumulada
+	void update(float t) { integrate(t); }
+
+	inline void clearForce() { force = { 0, 0, 0 }; }      // limpia la fuerza acumulada
 	inline void addForce(const Vector3& f) { force += f; } // añade fuerza para ser aplicada en el siguiente update
 
 	// --------------------------------------------SETTERS-------------------------------------------------------------

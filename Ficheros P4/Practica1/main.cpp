@@ -44,10 +44,10 @@ const float timeShoot = 0.01; // tiempo que queremos que pase entre particula la
 
 void initVariables() {      // inicializa todas mis variables
 	registry = new ParticleForceRegistry();          // registro de particulas con las fuerzas que las afectan
-	gravity = new GravityForce({ 0, -5, 0 });        // fuerzas de gravedad y viento (este ultimo solo afectara a las que esten en su radio de accion)
-	//windForce = new WindForce({ -100, 0, 0 }, 30, { 0, 60, 0 });       // vector fuerza, radio, posicion
+	gravity = new GravityForce({ 0, -15, 0 });        // fuerzas de gravedad y viento (este ultimo solo afectara a las que esten en su radio de accion)
+	windForce = new WindForce({ -100, 0, 0 }, 30, { 0, 40, 0 });       // vector fuerza, radio, posicion
 	//explosion = new ExplosionForce(20000, 30, { 0, 40, 0 }, 30);       // modulo fuerza, radio, posicion y tiempo hasta proxima explosion (en milisegundos)
-	muelle = new ParticleAnchoredSpring(new Vector3(0, 10, 0), 0.01, 1);
+	muelle = new ParticleAnchoredSpring(new Vector3(0, 10, 0), 10, 10);
 
 	/*fireworkManager = new FireWorkManager();         // creo el gestor de fuegos artificiales
 	fireworkManager->setForcesRegistry(registry);    // le establezco el registro de fuerzas
@@ -63,8 +63,12 @@ void initVariables() {      // inicializa todas mis variables
 	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(1));
 	RenderItem* renderItem = new RenderItem(shape, Vector4(1.0, 4.0, 3.0, 1.0));
 	particle = new Particle(renderItem);
-	registry->add(particle, muelle);
+	particle->setDamping(0.9);
 	shape->release();
+
+	registry->add(particle, muelle);
+	registry->add(particle, windForce);
+	registry->add(particle, gravity);
 }
 
 void updateAll(float t) {   // actualiza todos mis sistemas
@@ -154,13 +158,12 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 	case 'B':
 		break;
-	case ' ':
-		break;
-	/*case 'F': { // al pulsar F se crea un fuego artificial que va hacia arriba
-		//fireworkManager->FireworksCreate(AMARILLO);
+	case ' ': { // al pulsar espacio se desactiva el tiempo
+		bool activado = windForce->getActive();
+		windForce->setActive(!activado);
 		break;
 	}
-	case 'E': { // al pulsar E la fuerza de explosion explota en su posicion inicial
+	/*case 'E': { // al pulsar E la fuerza de explosion explota en su posicion inicial
 		explosion->setInitialPosition();
 		explosion->Explota();
 		break;

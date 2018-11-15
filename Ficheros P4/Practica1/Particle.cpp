@@ -19,14 +19,15 @@ void Particle::integrate(float t)       // actualiza los parametros de particula
 	p += v * t;                         // si no, actualizamos parametros y transform
 
 	Vector3 totalAcceleration = a;
-	a += force * inverse_mass;
+	totalAcceleration += force * inverse_mass;
 
 	v += totalAcceleration * t;
 	v *= powf(damping, t);
 
+	transform.p = p;
+
 	clearForce();
 
-	transform.p = p;
 	if ((p - posIni).magnitude() > maxRecorrido)setActive(false); // al recorrer una distancia, la particula se desactiva
 }
 

@@ -34,6 +34,8 @@ public:
 
 	inline float getRadio() { return radio; }
 
+	virtual inline void setActive(bool act);
+
 	virtual ~ExplosionForce() { renderItem->release(); }
 };
 

@@ -1,7 +1,9 @@
 #include "GravityForce.h"
 
 void GravityForce::updateForce(Particle* particle, float t) {
-	if (!particle->hasFiniteMass())return;
+	if (getActive()) {
+		if (!particle->hasFiniteMass())return;
 
-	particle->addForce(GRAVITY*particle->getMass());
+		particle->addForce(GRAVITY*particle->getMass());
+	}
 }

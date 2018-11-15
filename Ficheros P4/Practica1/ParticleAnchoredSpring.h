@@ -18,6 +18,8 @@ public:
 	inline void increaseK() { k++; }
 	inline void decreaseK() { k--; }
 
+	virtual inline void setActive(bool act);
+
 	virtual ~ParticleAnchoredSpring() { renderItem->release(); }
 };
 
