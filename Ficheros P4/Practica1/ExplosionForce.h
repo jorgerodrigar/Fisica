@@ -1,12 +1,10 @@
 #pragma once
-#include "ParticleForceGenerator.h"
+#include "VisibleParticleForceGenerator.h"
 #include "RenderUtils.hpp"
 
-class ExplosionForce : public ParticleForceGenerator
+class ExplosionForce : public VisibleParticleForceGenerator
 {
 private:
-	RenderItem* renderItem = nullptr; // representacion grafica de la zona de accion que tendra la explosion
-	physx::PxTransform transform;
 	Vector3 posIni;                   // posicion inicial del area de la explosion
 	float radio;
 	Vector3 forceVec;                 // vector de la fuerza a aplicar
@@ -23,9 +21,9 @@ public:
 
 	virtual void updateForce(Particle* particle, float t);
 
-	void temporizador(float t);               // calcula cuando puede volver a explotar tras haber explotado
+	void temporizador(float t);                             // calcula cuando puede volver a explotar tras haber explotado
 
-	void aplicaFuerza(Particle* particle);    // aplica la fuerza que corresponda a esa particula
+	void aplicaFuerza(Particle* particle);                  // aplica la fuerza que corresponda a esa particula
 
 	inline void Explota() { if(!explota) explota = true; }  // hace explotar (si puede)
 
@@ -34,8 +32,6 @@ public:
 
 	inline float getRadio() { return radio; }
 
-	virtual inline void setActive(bool act);
-
-	virtual ~ExplosionForce() { renderItem->release(); }
+	virtual ~ExplosionForce() {}
 };
 

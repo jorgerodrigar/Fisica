@@ -6,7 +6,6 @@ class ParticleForceGenerator
 {
 protected:
 	bool active = true;
-	bool registered = true;
 public:
 	ParticleForceGenerator() {}
 	virtual void updateForce(Particle* particle, float t) = 0;

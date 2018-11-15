@@ -26,13 +26,9 @@ PxPvd*                  gPvd        = NULL;
 
 //-------------------------------------------------MIS VARIABLES--------------------------------------------------------
 
-//ParticleSystem particleSystem;              // gestor del sistema de particulas
-//FireWorkManager* fireworkManager = nullptr; // gestor de fuegos artificiales
-
 ParticleForceRegistry* registry = nullptr;  // resgistro donde se guardara cada particula con el generador de fuerzas que le afecte
 GravityForce* gravity = nullptr;            // generador de gravedad (todas las particulas lo tendran)
 WindForce* windForce = nullptr;             // generador de viento (todas las particulas que esten en su espacio de accion se veran afectadas por el)
-ExplosionForce* explosion = nullptr;        // generador de explosiones (al pulsar la tecla 'e' todas las particulas en su radio se veran afectadas)
 ParticleAnchoredSpring* muelle = nullptr;
 Particle* particle = nullptr;
 
@@ -43,23 +39,12 @@ const float timeShoot = 0.01; // tiempo que queremos que pase entre particula la
 //---------------------------------------------------MIS METODOS---------------------------------------------------------
 
 void initVariables() {      // inicializa todas mis variables
-	registry = new ParticleForceRegistry();          // registro de particulas con las fuerzas que las afectan
-	gravity = new GravityForce({ 0, -15, 0 });        // fuerzas de gravedad y viento (este ultimo solo afectara a las que esten en su radio de accion)
-	windForce = new WindForce({ -100, 0, 0 }, 30, { 0, 40, 0 });       // vector fuerza, radio, posicion
-	//explosion = new ExplosionForce(20000, 30, { 0, 40, 0 }, 30);       // modulo fuerza, radio, posicion y tiempo hasta proxima explosion (en milisegundos)
-	muelle = new ParticleAnchoredSpring(new Vector3(0, 10, 0), 10, 10);
+	registry = new ParticleForceRegistry();                             // registro de particulas con las fuerzas que las afectan
+	gravity = new GravityForce({ 0, -15, 0 });                          // fuerzas de gravedad y viento (este ultimo solo afectara a las que esten en su radio de accion)
+	windForce = new WindForce({ -100, 0, 0 }, 30, { 0, 40, 0 });        // vector fuerza, radio, posicion
+	muelle = new ParticleAnchoredSpring(new Vector3(0, 10, 0), 10, 10); // muelle anclado, con su posicion, k, y maxima elongacion
 
-	/*fireworkManager = new FireWorkManager();         // creo el gestor de fuegos artificiales
-	fireworkManager->setForcesRegistry(registry);    // le establezco el registro de fuerzas
-	fireworkManager->addForceGenrator(gravity);      // y le digo que a los fireWork les van a afectar estas fuerzas
-	//fireworkManager->addForceGenrator(windForce);
-	fireworkManager->addForceGenrator(explosion);
-
-	particleSystem.setForcesRegistry(registry);      // lo mismo con el sistema de partículas
-	particleSystem.addForceGenrator(gravity);
-	//particleSystem.addForceGenrator(windForce);
-	particleSystem.addForceGenrator(explosion);*/
-
+	// particula que se vera afectada por un muelle anclado, viento y gravedad
 	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(1));
 	RenderItem* renderItem = new RenderItem(shape, Vector4(1.0, 4.0, 3.0, 1.0));
 	particle = new Particle(renderItem);
@@ -72,23 +57,17 @@ void initVariables() {      // inicializa todas mis variables
 }
 
 void updateAll(float t) {   // actualiza todos mis sistemas
-	//particleSystem.update(t);
-	//fireworkManager->FireworksUpdate(t);
 	registry->updateForces(t);
 	particle->update(t);
 }
 
 void deleteAll() {   // borra todas mis variables
-	//delete fireworkManager;
-	//fireworkManager = nullptr;
 	delete registry;
 	registry = nullptr;
 	delete gravity;
 	gravity = nullptr;
 	delete windForce;
 	windForce = nullptr;
-	delete explosion;
-	explosion = nullptr;
 	delete muelle;
 	muelle = nullptr;
 	delete particle;
@@ -124,12 +103,6 @@ void stepPhysics(bool interactive, double t)
 	PX_UNUSED(interactive);
 	PX_UNUSED(t);
 
-	last_time += t;
-	if (last_time > next_time) {
-		//particleSystem.shoot();   // genera particulas como una "fuente"
-		next_time = last_time + timeShoot;
-	}
-
 	updateAll(t);
 }
 
@@ -158,21 +131,11 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 	case 'B':
 		break;
-	case ' ': { // al pulsar espacio se desactiva el tiempo
+	case ' ': { // al pulsar espacio se desactiva el viento
 		bool activado = windForce->getActive();
 		windForce->setActive(!activado);
 		break;
 	}
-	/*case 'E': { // al pulsar E la fuerza de explosion explota en su posicion inicial
-		explosion->setInitialPosition();
-		explosion->Explota();
-		break;
-	}
-	case 'R': { // al pulsar R la fuerza de explosion explota en la posicion en la que estemos mirando
-		explosion->setPosition(GetCamera()->getEye() + GetCamera()->getDir() * (GetCamera()->getEye().z + explosion->getRadio()));
-		explosion->Explota();
-		break;
-	}*/
 	default:
 		break;
 	}
