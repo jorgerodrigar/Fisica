@@ -10,7 +10,7 @@
 #include "GravityForce.h"
 #include "WindForce.h"
 #include "ExplosionForce.h"
-#include "ParticleAnchoredSpring.h"
+#include "ParticleSpring.h"
 
 using namespace physx;
 
@@ -27,44 +27,49 @@ PxPvd*                  gPvd        = NULL;
 //-------------------------------------------------MIS VARIABLES--------------------------------------------------------
 
 ParticleForceRegistry* registry = nullptr;  // resgistro donde se guardara cada particula con el generador de fuerzas que le afecte
-GravityForce* gravity = nullptr;            // generador de gravedad
-WindForce* windForce = nullptr;             // generador de viento
-ParticleAnchoredSpring* muelle = nullptr;   // muelle anclado a una posicion
-Particle* particle = nullptr;               // particula que se vera afectada por los generadores anteriores
+ParticleSpring* muelle1 = nullptr;          // un muelle para cada particula
+ParticleSpring* muelle2 = nullptr;          // para que vayan unidas entre si
+Particle* p1 = nullptr;                     // particulas que iran unidas
+Particle* p2 = nullptr;
 
-std::vector<ParticleForceGenerator*> generadores; // vector de todos los generadores de la escena
-
-float last_time = 0;
-float next_time = 0;
-const float timeShoot = 0.01; // tiempo que queremos que pase entre particula lanzada y su siguiente (en el sistema de particulas)
+std::vector<ParticleForceGenerator*> generadores; // todos los generadores de fuerza de la escena
+std::vector<Particle*> objetos;                   // todos los objetos de la escena (particulas, fireworks, ...)
 
 //---------------------------------------------------MIS METODOS---------------------------------------------------------
 
 void initVariables() {      // inicializa todas mis variables
 	registry = new ParticleForceRegistry();                             // registro de particulas con las fuerzas que las afectan
-	gravity = new GravityForce({ 0, -15, 0 });                          // fuerzas de gravedad y viento (este ultimo solo afectara a las que esten en su radio de accion)
-	generadores.push_back(gravity);
-	windForce = new WindForce({ 100, 0, 0 }, 30, { 0, 0, 0 });         // vector fuerza, radio, posicion
-	generadores.push_back(windForce);
-	muelle = new ParticleAnchoredSpring(new Vector3(0, 10, 0), 10, 10); // muelle anclado, con su posicion, k, y maxima elongacion
-	generadores.push_back(muelle);
 
-	// particula que se vera afectada por un muelle anclado, viento y gravedad
-	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(1));
-	RenderItem* renderItem = new RenderItem(shape, Vector4(1.0, 4.0, 3.0, 1.0));
-	particle = new Particle(renderItem);
-	particle->setDamping(0.6);
-	particle->setMaxRecorrido(2000);
-	shape->release();
+	// particulas que se veran afectadas por muelle entre si
+	physx::PxShape* shape1 = CreateShape(physx::PxSphereGeometry(1));
+	RenderItem* renderItem1 = new RenderItem(shape1, Vector4(1.0, 4.0, 3.0, 1.0));
+	p1 = new Particle(renderItem1);
+	p1->setDamping(0.6);
+	p1->setMaxRecorrido(2000);
+	shape1->release();
+	physx::PxShape* shape2 = CreateShape(physx::PxSphereGeometry(1));
+	RenderItem* renderItem2 = new RenderItem(shape2, Vector4(1.0, 4.0, 3.0, 1.0));
+	p2 = new Particle(renderItem2);
+	p2->setDamping(0.6);
+	p2->setMaxRecorrido(2000);
+	p2->setPosition({ 0, 20, 0 });
+	shape2->release();
 
-	registry->add(particle, muelle);
-	registry->add(particle, windForce);
-	registry->add(particle, gravity);
+	objetos.push_back(p1);
+	objetos.push_back(p2);
+
+	muelle1 = new ParticleSpring(p2, 10, 10); // muelle que anclara la primera particula a la segunda
+	generadores.push_back(muelle1);
+	muelle2 = new ParticleSpring(p1, 10, 10); // muelle que anclara la segunda particula a la primera
+	generadores.push_back(muelle2);
+
+	registry->add(p1, muelle1);
+	registry->add(p2, muelle2);
 }
 
 void updateAll(float t) {   // actualiza todos mis sistemas
 	registry->updateForces(t);
-	particle->update(t);
+	for (auto o : objetos)o->update(t);
 }
 
 void deleteAll() {   // borra todas mis variables
@@ -76,8 +81,10 @@ void deleteAll() {   // borra todas mis variables
 		f = nullptr;
 	}
 
-	delete particle;
-	particle = nullptr;
+	for (auto o : objetos) {
+		delete o;
+		o = nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -138,6 +145,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	default:
 		break;
 	}
+
 	for (auto f : generadores)f->handleEvent(key);
 }
 

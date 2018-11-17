@@ -10,7 +10,8 @@
 #include "GravityForce.h"
 #include "WindForce.h"
 #include "ExplosionForce.h"
-#include "ParticleAnchoredSpring.h"
+#include "ParticleBuoyancy.h"
+#include "RenderObject.h"
 
 using namespace physx;
 
@@ -27,12 +28,13 @@ PxPvd*                  gPvd        = NULL;
 //-------------------------------------------------MIS VARIABLES--------------------------------------------------------
 
 ParticleForceRegistry* registry = nullptr;  // resgistro donde se guardara cada particula con el generador de fuerzas que le afecte
-GravityForce* gravity = nullptr;            // generador de gravedad
-WindForce* windForce = nullptr;             // generador de viento
-ParticleAnchoredSpring* muelle = nullptr;   // muelle anclado a una posicion
-Particle* particle = nullptr;               // particula que se vera afectada por los generadores anteriores
+GravityForce* gravity = nullptr;            // generador de gravedad (todas las particulas lo tendran)
+ParticleBuoyancy* flotamiento = nullptr;    // generador de flotamiento
+Particle* p1 = nullptr;                     // particula que flotara
+RenderObject water;                         // representacion grafica de agua
 
 std::vector<ParticleForceGenerator*> generadores; // vector de todos los generadores de la escena
+std::vector<Particle*> objetos;                   // vector de todos los objetos de la escena (particulas, fireworks, ...)
 
 float last_time = 0;
 float next_time = 0;
@@ -42,42 +44,46 @@ const float timeShoot = 0.01; // tiempo que queremos que pase entre particula la
 
 void initVariables() {      // inicializa todas mis variables
 	registry = new ParticleForceRegistry();                             // registro de particulas con las fuerzas que las afectan
-	gravity = new GravityForce({ 0, -15, 0 });                          // fuerzas de gravedad y viento (este ultimo solo afectara a las que esten en su radio de accion)
+	gravity = new GravityForce({ 0, -15, 0 });                          // fuerza de gravedad
 	generadores.push_back(gravity);
-	windForce = new WindForce({ 100, 0, 0 }, 30, { 0, 0, 0 });         // vector fuerza, radio, posicion
-	generadores.push_back(windForce);
-	muelle = new ParticleAnchoredSpring(new Vector3(0, 10, 0), 10, 10); // muelle anclado, con su posicion, k, y maxima elongacion
-	generadores.push_back(muelle);
+	flotamiento = new ParticleBuoyancy(4, 4, 24, 10);                   // fuerza de flotamiento
+	generadores.push_back(flotamiento);
 
-	// particula que se vera afectada por un muelle anclado, viento y gravedad
-	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(1));
-	RenderItem* renderItem = new RenderItem(shape, Vector4(1.0, 4.0, 3.0, 1.0));
-	particle = new Particle(renderItem);
-	particle->setDamping(0.6);
-	particle->setMaxRecorrido(2000);
-	shape->release();
+	// agua
+	water = RenderObject(physx::PxBoxGeometry(50, 0.1, 50), { 0, 20, 0 }, Vector4(0.0, 0.0, 1.0, 1.0));
 
-	registry->add(particle, muelle);
-	registry->add(particle, windForce);
-	registry->add(particle, gravity);
+	// particula que se vera afectada por el flotamiento
+	physx::PxShape* shape1 = CreateShape(physx::PxSphereGeometry(1));
+	RenderItem* renderItem1 = new RenderItem(shape1, Vector4(1.0, 4.0, 3.0, 1.0));
+	p1 = new Particle(renderItem1);
+	p1->setDamping(0.3);
+	shape1->release();
+
+	objetos.push_back(p1);
+
+	// a la particula le afectara el flotamiento y la gravedad
+	registry->add(p1, flotamiento);
+	registry->add(p1, gravity);
 }
 
 void updateAll(float t) {   // actualiza todos mis sistemas
 	registry->updateForces(t);
-	particle->update(t);
+	for (auto o : objetos)o->update(t);
 }
 
 void deleteAll() {   // borra todas mis variables
 	delete registry;
 	registry = nullptr;
-	
+
 	for (auto f : generadores) {
 		delete f;
 		f = nullptr;
 	}
 
-	delete particle;
-	particle = nullptr;
+	for (auto o : objetos) {
+		delete o;
+		o = nullptr;
+	}
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -135,9 +141,20 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	PX_UNUSED(camera);
 	switch(toupper(key))
 	{
+	case 'B':
+		break;
+	case '+': {
+		p1->increaseMass();
+		break;
+	}
+	case '-': {
+		p1->decreaseMass();
+		break;
+	}
 	default:
 		break;
 	}
+
 	for (auto f : generadores)f->handleEvent(key);
 }
 
