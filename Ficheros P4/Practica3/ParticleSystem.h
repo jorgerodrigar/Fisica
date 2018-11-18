@@ -1,21 +1,15 @@
 #pragma once
-#include "Particle.h"
-#include "Pool.h"
+#include "ParticleManager.h"
 
-class ParticleSystem                         // gestor del sistema de particulas
+class ParticleSystem:public ParticleManager  // gestor del sistema de particulas
 {
 private:
-	Pool<Particle> pool;
+	Vector3 pos;                             // posicion desde la que saldran las particulas
 public:
-	ParticleSystem() {}
+	ParticleSystem(Vector3 pos_ = { 0.0, 0.0, 0.0 }):pos(pos_) {}
 
-	void shoot(float vel = 75);              // dispara particulas en direcciones aleatorias como una fuente
+	void Shoot(float vel = 75);              // dispara particulas en direcciones aleatorias como una fuente
 
-	void update(float t) { pool.Update(t); } // actualiza la pool
-
-	inline void setForcesRegistry(ParticleForceRegistry* registry_) { pool.setForcesRegistry(registry_); } // establece un registro
-	inline void addForceGenrator(ParticleForceGenerator* generator) { pool.addForceGenrator(generator); }  // añade una fuerza
-
-	~ParticleSystem() {}
+	virtual ~ParticleSystem() {}
 };
 

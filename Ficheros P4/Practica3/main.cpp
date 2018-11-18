@@ -12,6 +12,7 @@
 #include "ExplosionForce.h"
 #include "ParticleBuoyancy.h"
 #include "RenderObject.h"
+#include "Manager.h"
 
 using namespace physx;
 
@@ -35,10 +36,6 @@ RenderObject water;                         // representacion grafica de agua
 
 std::vector<ParticleForceGenerator*> generadores; // vector de todos los generadores de la escena
 std::vector<Particle*> objetos;                   // vector de todos los objetos de la escena (particulas, fireworks, ...)
-
-float last_time = 0;
-float next_time = 0;
-const float timeShoot = 0.01; // tiempo que queremos que pase entre particula lanzada y su siguiente (en el sistema de particulas)
 
 //---------------------------------------------------MIS METODOS---------------------------------------------------------
 
