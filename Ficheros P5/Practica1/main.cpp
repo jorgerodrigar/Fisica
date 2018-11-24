@@ -9,6 +9,8 @@
 #include "RenderUtils.hpp"
 
 #include "RigidBodyManager.h"
+#include "ParticleForceRegistry.h"
+#include "ExplosionForce.h"
 
 using namespace physx;
 
@@ -28,10 +30,17 @@ PxScene*				gScene      = NULL;
 
 //---------------------MIS VARIABLES----------------------
 
+// managers
 PxRigidStatic* suelo = nullptr;
 RigidBodyManager* rigidBodyManager = nullptr;
 
 std::vector<Manager*> managers;
+
+// fuerzas
+ParticleForceRegistry<PxRigidDynamic>* registry = nullptr;
+ExplosionForce* explosion = nullptr;
+
+std::vector<ParticleForceGenerator*> forces;
 
 // temporizador para que RigidBodyManager dispare
 float last_time = 0;
@@ -53,6 +62,14 @@ void initMyVariables() {
 	// generador de rigid bodys
 	rigidBodyManager = new RigidBodyManager(gScene, gPhysics, { 0, 20, 0 });
 	managers.push_back(rigidBodyManager);
+
+	// fuerzas
+	registry = new ParticleForceRegistry<PxRigidDynamic>();
+	explosion = new ExplosionForce(20000, 30, { 0, 40, 0 }, 1);
+	forces.push_back(explosion);
+
+	rigidBodyManager->setForcesRegistry(registry);
+	rigidBodyManager->addForceGenrator(explosion);
 }
 
 void updateMyVariables(double t) {
@@ -62,17 +79,27 @@ void updateMyVariables(double t) {
 		next_time = last_time + timeShoot;
 	}
 	for (auto m : managers)m->update(t);
+	registry->updateForces(t);
 }
 
 void deleteMyVariables() {
+	delete registry;
+	registry = nullptr;
+
 	for (auto m : managers) {
 		delete m;
 		m = nullptr;
+	}
+
+	for (auto f : forces) {
+		delete f;
+		f = nullptr;
 	}
 }
 
 void keyPressOfMyVariables(unsigned char key) {
 	for (auto m : managers)m->handleEvent(key);
+	for (auto f : forces)f->handleEvent(key);
 }
 
 // Initialize physics engine

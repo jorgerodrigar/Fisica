@@ -1,9 +1,9 @@
 #pragma once
-#include "Manager.h"
+#include "RBManager.h"
 #include "Pool.h"
 #include "PxRigidDynamic.h"
 
-class RigidBodyManager:public Manager      // gestor de RigidBody
+class RigidBodyManager:public RBManager    // gestor de RigidBody
 {
 private:
 	Vector3 pos;                           // posicion de la cual salen
@@ -14,6 +14,7 @@ private:
 	int currentRigidBodys = 0;             // numero de generaciones actuales
 
 	void createNewRigidBody(Vector3 dir);  // crea un RigidBody en la posicion dada, con la vel y dir dadas
+	void applyForces(physx::PxRigidDynamic* obj);
 
 public:
 	RigidBodyManager(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos_ = { 0.0, 0.0, 0.0 }, float vel_ = 60) : 
@@ -22,9 +23,6 @@ public:
 	virtual void update(float t) {}
 	void Shoot();                                  // calcula una direccion aleatoria y manda crear un RigidBody con ella
 	virtual void handleEvent(unsigned char key);   // gestor de input
-	virtual inline void setForcesRegistry(ParticleForceRegistry<Particle>* registry_) {}               // establece un registro de particulas
-	virtual inline void setForcesRegistry(ParticleForceRegistry<physx::PxRigidDynamic>* registry_) {}  // establece un registro de RigidBody
-	virtual inline void addForceGenrator(ParticleForceGenerator* generator) {  } // añade una fuerza
 
 	virtual ~RigidBodyManager() {}
 };

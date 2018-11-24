@@ -1,12 +1,12 @@
 #pragma once
-#include "Manager.h"
+#include "PManager.h"
 #include <vector>
 #include "FireWorkRules.h"
 #include <queue>
 #include <iostream>
 #include <vector>
 
-class FireWorkManager:public Manager {                          // clase que almacena y gestiona los fuegos artificiales y sus reglas
+class FireWorkManager:public PManager {                          // clase que almacena y gestiona los fuegos artificiales y sus reglas
 private:
 	std::vector<FireWorkRule> rules;                            // reglas que seguiran los fireWorks
 	std::vector<FireWork*> fireworks;                           // vector de fireWorks

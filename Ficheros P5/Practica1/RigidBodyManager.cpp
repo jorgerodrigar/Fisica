@@ -11,6 +11,15 @@ void RigidBodyManager::createNewRigidBody(Vector3 dir) {
 		gScene->addActor(*obj);
 		shape->release();
 		currentRigidBodys++;
+
+		applyForces(obj);
+}
+
+void RigidBodyManager::applyForces(physx::PxRigidDynamic* obj) {
+	if (registry != nullptr) {
+		for (int i = 0; i < forceGenerators.size(); i++)
+			registry->add(obj, forceGenerators[i]);
+	}
 }
 
 void RigidBodyManager::Shoot() {

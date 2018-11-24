@@ -1,8 +1,8 @@
 #pragma once
-#include "Manager.h"
+#include "PManager.h"
 #include "Pool.h"
 
-class ParticleManager:public Manager  // gestor de particulas
+class ParticleManager:public PManager  // gestor de particulas
 {
 protected:
 	Pool<Particle> pool;

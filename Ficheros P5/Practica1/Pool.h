@@ -24,7 +24,7 @@ private:
 	}
 
 	T* CreateElement() {
-		if (shape == nullptr)shape = CreateShape(physx::PxSphereGeometry(1));               // en caso de no haber establecido ningun shape creamos una esfera por defecto
+		if (shape == nullptr)shape = CreateShape(physx::PxSphereGeometry(1));        // en caso de no haber establecido ningun shape creamos una esfera por defecto
 		RenderItem* renderItem = new RenderItem(shape, Vector4(1.0, 4.0, 3.0, 1.0)); // creamos el item que representara graficamente al elemento
 		T* elemento = new T(renderItem);                                             // creamos el elemento
 		elemento->setActive(false);                                                  // lo desactivamos
