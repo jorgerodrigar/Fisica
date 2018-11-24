@@ -10,6 +10,16 @@ void ParticleSpring::updateForce(Particle* particle, float t) {
 	particle->addForce(f);
 }
 
+void ParticleSpring::updateForce(physx::PxRigidDynamic* obj, float t) {
+	Vector3 f = obj->getGlobalPose().p;
+	f -= other->getPosition();
+
+	float length = f.normalize();
+
+	f *= -(length*k);
+	obj->addForce(f);
+}
+
 void ParticleSpring::handleEvent(unsigned char key) {
 	switch (toupper(key))
 	{

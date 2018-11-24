@@ -18,6 +18,15 @@ void ExplosionForce::updateForce(Particle* particle, float t) {
 	}
 }
 
+void ExplosionForce::updateForce(physx::PxRigidDynamic* obj, float t) {
+	if (!getActive())return;
+
+	if (explota) {       // si explota, iniciamos el contador
+		temporizador(t); // y aplicamos fuerza
+		aplicaFuerza(obj);
+	}
+}
+
 // a las particulas que esten en su zona de accion se les aplicara la fuerza correspondiente
 void ExplosionForce::aplicaFuerza(Particle* particle) {
 	Vector3 dist = (particle->getPosition() - transform.p);
@@ -25,6 +34,15 @@ void ExplosionForce::aplicaFuerza(Particle* particle) {
 	if (dist.magnitude() < radio) {
 		forceVec = ((dist / dist.magnitude()*FORCE)/dist.magnitude());  // mandara a cada particula lejos del centro de la explosion
 		particle->addForce(forceVec*particle->getMass());               // la fuerza sera menor a medida que la particula se aleja del centro
+	}
+}
+
+void ExplosionForce::aplicaFuerza(physx::PxRigidDynamic* obj) {
+	Vector3 dist = (obj->getGlobalPose().p - transform.p);
+
+	if (dist.magnitude() < radio) {
+		forceVec = ((dist / dist.magnitude()*FORCE) / dist.magnitude());  // mandara a cada particula lejos del centro de la explosion
+		obj->addForce(forceVec*obj->getMass());               // la fuerza sera menor a medida que la particula se aleja del centro
 	}
 }
 

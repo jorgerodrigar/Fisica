@@ -14,6 +14,7 @@ public:
 		maxDepth(maxDepth_), volume(volume_), waterHeight(waterHeight_), liquidDensity(liquidDensity_) {}
 
 	virtual void updateForce(Particle* particle, float t);
+	virtual void updateForce(physx::PxRigidDynamic* obj, float t);
 	virtual void handleEvent(unsigned char key) {}
 
 	virtual ~ParticleBuoyancy() {}

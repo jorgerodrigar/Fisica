@@ -20,12 +20,14 @@ public:
 	ExplosionForce(float force = 20000, float radio_ = 10, Vector3 pos = { 0, 0, 0 }, float timeExplosion_ = 30);
 
 	virtual void updateForce(Particle* particle, float t);
+	virtual void updateForce(physx::PxRigidDynamic* obj, float t);
 
 	virtual void handleEvent(unsigned char key);
 
 	void temporizador(float t);                             // calcula cuando puede volver a explotar tras haber explotado
 
 	void aplicaFuerza(Particle* particle);                  // aplica la fuerza que corresponda a esa particula
+	void aplicaFuerza(physx::PxRigidDynamic* obj);
 
 	inline void Explota() { if(!explota) explota = true; }  // hace explotar (si puede)
 

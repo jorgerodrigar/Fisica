@@ -10,7 +10,7 @@ private:
 	std::vector<T*> elementos;                 // vector de elementos
 	float vel, acc, damping;                   // atributos que tendran los elementos
 	physx::PxShape* shape = nullptr;
-	ParticleForceRegistry* registry = nullptr;              // resgistro donde se guardara cada elemento con el generador de fuerzas que le afecte
+	ParticleForceRegistry<T>* registry = nullptr;           // resgistro donde se guardara cada elemento con el generador de fuerzas que le afecte
 	std::vector<ParticleForceGenerator*> forceGenerators;   // vector de fuerzas que se aplican a los elementos
 
 	T* getElement() {                          // devuelve el primer elemento de la Pool que este desactivado
@@ -49,7 +49,6 @@ public:
 	void Shoot(Vector3 pos, Vector3 dir) {
 		T* elemento = getElement();
 		elemento->setPosition(pos);           // lo pongo en la posicion deseada
-		dir.normalize();
 		elemento->setVelocity(dir*vel);       // le aplico velocidad en la direccion deseada
 		elemento->setAcceleration(dir*acc);   // le aplico aceleracion en la direccion deseada
 		elemento->setDamping(damping);        // le añado un poco de rozamiento
@@ -62,7 +61,7 @@ public:
 	void setVel(float v) { vel = v; }
 	void setAcc(float a) { acc = a; }
 	void setDamp(float damp) { damping = damp; }
-	inline void setForcesRegistry(ParticleForceRegistry* registry_) { registry = registry_; }                 // establece un registro
+	inline void setForcesRegistry(ParticleForceRegistry<T>* registry_) { registry = registry_; }              // establece un registro
 	inline void addForceGenrator(ParticleForceGenerator* generator) { forceGenerators.push_back(generator); } // añade una fuerza
 
 	virtual ~Pool() {

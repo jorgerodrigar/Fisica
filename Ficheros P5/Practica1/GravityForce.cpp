@@ -6,3 +6,10 @@ void GravityForce::updateForce(Particle* particle, float t) {
 
 	particle->addForce(GRAVITY*particle->getMass());
 }
+
+void GravityForce::updateForce(physx::PxRigidDynamic* obj, float t) {
+
+	if (!getActive())return;
+
+	obj->addForce(GRAVITY*obj->getMass());
+}

@@ -9,6 +9,7 @@ public:
 	GravityForce(const Vector3& gravity) : GRAVITY(gravity) {}
 
 	virtual void updateForce(Particle* particle, float t);
+	virtual void updateForce(physx::PxRigidDynamic* obj, float t);
 
 	virtual void handleEvent(unsigned char key) {}
 

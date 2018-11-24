@@ -33,6 +33,11 @@ RigidBodyManager* rigidBodyManager = nullptr;
 
 std::vector<Manager*> managers;
 
+// temporizador para que RigidBodyManager dispare
+float last_time = 0;
+float next_time = 0;
+const float timeShoot = 0.5;
+
 //--------------------------------------------------------
 
 void initMyVariables() {
@@ -46,8 +51,17 @@ void initMyVariables() {
 	shape->release();
 
 	// generador de rigid bodys
-	rigidBodyManager = new RigidBodyManager(gScene, gPhysics, { 0, 50, 0 });
+	rigidBodyManager = new RigidBodyManager(gScene, gPhysics, { 0, 20, 0 });
 	managers.push_back(rigidBodyManager);
+}
+
+void updateMyVariables(double t) {
+	last_time += t;
+	if (last_time > next_time) {
+		rigidBodyManager->Shoot();
+		next_time = last_time + timeShoot;
+	}
+	for (auto m : managers)m->update(t);
 }
 
 void deleteMyVariables() {
@@ -55,6 +69,10 @@ void deleteMyVariables() {
 		delete m;
 		m = nullptr;
 	}
+}
+
+void keyPressOfMyVariables(unsigned char key) {
+	for (auto m : managers)m->handleEvent(key);
 }
 
 // Initialize physics engine
@@ -77,7 +95,7 @@ void initPhysics(bool interactive)
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	sceneDesc.gravity = { 0, -10, 0 };
+	sceneDesc.gravity = { 0, -60, 0 };
 	gScene = gPhysics->createScene(sceneDesc);
 	// ------------------------------------------------------
 
@@ -94,6 +112,8 @@ void stepPhysics(bool interactive, double t)
 
 	gScene->simulate(t);
 	gScene->fetchResults(true);
+
+	updateMyVariables(t);
 }
 
 // Function to clean data
@@ -121,7 +141,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 {
 	PX_UNUSED(camera);
 
-	for (auto m : managers)m->handleEvent(key);
+	keyPressOfMyVariables(key);
 }
 
 int main(int, const char*const*)

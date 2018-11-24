@@ -10,8 +10,6 @@ class FireWorkManager:public Manager {                          // clase que alm
 private:
 	std::vector<FireWorkRule> rules;                            // reglas que seguiran los fireWorks
 	std::vector<FireWork*> fireworks;                           // vector de fireWorks
-	ParticleForceRegistry* registry = nullptr;                  // resgistro donde se guardara cada fireWork con el generador de fuerzas que le afecte
-	std::vector<ParticleForceGenerator*> forceGenerators;       // vector de fuerzas que se aplican a los fireWork
 
 	void initFireworkRules();                                   // inicializa las reglas que tendran los fuegos artificiales
 	void create(Tipo type, unsigned count, FireWork* firework); // crea count fuegos de tipo type y padre firework
@@ -25,8 +23,6 @@ public:
 	void FireworksCreate(Tipo type, FireWork* parent = NULL);   // crea un fuego artificial de tipo type y con padre o no
 
 	virtual void update(float t) { FireworksUpdate(t); }
-	virtual inline void setForcesRegistry(ParticleForceRegistry* registry_) { registry = registry_; }                 // establece un registro
-	virtual inline void addForceGenrator(ParticleForceGenerator* generator) { forceGenerators.push_back(generator); } // añade una fuerza
 	virtual void handleEvent(unsigned char key);
 
 	virtual ~FireWorkManager();                                 // elimina todos los fuegos artificiales

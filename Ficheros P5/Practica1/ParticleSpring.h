@@ -14,6 +14,7 @@ public:
 		other(other_), k(k_), restLength(restLength_) {}
 
 	virtual void updateForce(Particle* particle, float t);
+	virtual void updateForce(physx::PxRigidDynamic* obj, float t);
 	virtual void handleEvent(unsigned char key);
 
 	inline void increaseK() { if (k < 100) k += 10; }

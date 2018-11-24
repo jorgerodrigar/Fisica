@@ -10,6 +10,8 @@ void ParticleSystem::Shoot(float vel) {
 	signoZ = rand() % 2;
 	if (signoX == 0)x = -x;
 	if (signoZ == 0)z = -z;
-	pool.Shoot(pos, { x, y, z });
+	Vector3 dir = { x, y, z };
+	dir.normalize();
+	pool.Shoot(pos, dir);
 	pool.setVel(vel);
 }

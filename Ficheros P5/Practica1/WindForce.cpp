@@ -16,6 +16,11 @@ void WindForce::updateForce(Particle* particle, float t) {
 		particle->addForce(FORCE*particle->getMass());
 }
 
+void WindForce::updateForce(physx::PxRigidDynamic* obj, float t) {
+	if ((obj->getGlobalPose().p - transform.p).magnitude() < radio)
+		obj->addForce(FORCE*obj->getMass());
+}
+
 void WindForce::handleEvent(unsigned char key) {
 	switch (toupper(key))
 	{

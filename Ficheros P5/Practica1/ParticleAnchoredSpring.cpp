@@ -20,6 +20,18 @@ void ParticleAnchoredSpring::updateForce(Particle* particle, float t) {
 	}
 }
 
+void ParticleAnchoredSpring::updateForce(physx::PxRigidDynamic* obj, float t) {
+	if (getActive()) {
+		Vector3 f = obj->getGlobalPose().p;
+		f -= *anchor;
+
+		float length = f.normalize();
+
+		f *= -(length*k);
+		obj->addForce(f);
+	}
+}
+
 void ParticleAnchoredSpring::handleEvent(unsigned char key) {
 	switch (toupper(key))
 	{

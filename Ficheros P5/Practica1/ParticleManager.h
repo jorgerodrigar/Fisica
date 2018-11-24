@@ -15,8 +15,11 @@ public:
 
 	virtual void update(float t) { pool.Update(t); }               // actualiza la pool
 
-	virtual inline void setForcesRegistry(ParticleForceRegistry* registry_) { pool.setForcesRegistry(registry_); } // establece un registro
-	virtual inline void addForceGenrator(ParticleForceGenerator* generator) { pool.addForceGenrator(generator); }  // añade una fuerza
+	// establece un registro de particulas y se lo da a la Pool
+	virtual inline void setForcesRegistry(ParticleForceRegistry<Particle>* registry_) { pool.setForcesRegistry(registry_); }
+	// añade una fuerza al registro
+	virtual inline void addForceGenrator(ParticleForceGenerator* generator_) { pool.addForceGenrator(generator_); }
+
 	virtual void handleEvent(unsigned char key);
 
 	~ParticleManager() {}
