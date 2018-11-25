@@ -15,7 +15,7 @@ void ParticleAnchoredSpring::updateForce(Particle* particle, float t) {
 
 		float length = f.normalize();
 
-		f *= -(length*k);
+		f *= -((length - restLength)*k);
 		particle->addForce(f);
 	}
 }
