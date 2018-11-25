@@ -9,7 +9,6 @@
 #include "RenderUtils.hpp"
 
 #include "RigidBodyManager.h"
-#include "ParticleForceRegistry.h"
 #include "ExplosionForce.h"
 
 using namespace physx;
@@ -37,9 +36,7 @@ RigidBodyManager* rigidBodyManager = nullptr;
 std::vector<Manager*> managers;
 
 // fuerzas
-ParticleForceRegistry<PxRigidDynamic>* registry = nullptr;
 ExplosionForce* explosion = nullptr;
-
 std::vector<ParticleForceGenerator*> forces;
 
 // temporizador para que RigidBodyManager dispare
@@ -66,11 +63,10 @@ void initMyVariables() {
 	managers.push_back(rigidBodyManager);
 
 	// fuerzas
-	registry = new ParticleForceRegistry<PxRigidDynamic>();
 	explosion = new ExplosionForce(20000, 30, { 0, 40, 0 }, 1);
 	forces.push_back(explosion);
 
-	rigidBodyManager->setForcesRegistry(registry);
+	rigidBodyManager->createForcesRegistry();
 	rigidBodyManager->addForceGenrator(explosion);
 }
 
@@ -81,13 +77,9 @@ void updateMyVariables(double t) {
 		next_time = last_time + timeShoot;
 	}
 	for (auto m : managers)m->update(t);
-	registry->updateForces(t);
 }
 
 void deleteMyVariables() {
-	delete registry;
-	registry = nullptr;
-
 	for (auto m : managers) {
 		delete m;
 		m = nullptr;

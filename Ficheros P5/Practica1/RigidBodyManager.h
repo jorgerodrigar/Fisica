@@ -20,7 +20,7 @@ public:
 	RigidBodyManager(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos_ = { 0.0, 0.0, 0.0 }, float vel_ = 60) : 
 		gScene(gScene_), gPhysics(gPhysics_), pos(pos_), vel(vel_) {}
 
-	virtual void update(float t) {}
+	virtual void update(float t) { if (registry != nullptr)registry->updateForces(t); }
 	void Shoot();                                  // calcula una direccion aleatoria y manda crear un RigidBody con ella
 	virtual void handleEvent(unsigned char key);   // gestor de input
 

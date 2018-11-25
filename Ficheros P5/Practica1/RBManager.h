@@ -9,8 +9,8 @@ public:
 	RBManager() {}
 
 	// establece los registros
-	virtual inline void setForcesRegistry(ParticleForceRegistry<physx::PxRigidDynamic>* registry_) { registry = registry_; }
+	virtual inline void createForcesRegistry() { registry = new ParticleForceRegistry<physx::PxRigidDynamic>(); }
 
-	virtual ~RBManager() {}
+	virtual ~RBManager() { delete registry; registry = nullptr; }
 };
 

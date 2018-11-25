@@ -22,7 +22,7 @@ public:
 
 	void FireworksCreate(Tipo type, FireWork* parent = NULL);   // crea un fuego artificial de tipo type y con padre o no
 
-	virtual void update(float t) { FireworksUpdate(t); }
+	virtual void update(float t) { FireworksUpdate(t); if (registry != nullptr)registry->updateForces(t); }
 	virtual void handleEvent(unsigned char key);
 
 	virtual ~FireWorkManager();                                 // elimina todos los fuegos artificiales

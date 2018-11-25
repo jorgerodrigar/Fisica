@@ -13,10 +13,10 @@ private:
 public:
 	ParticleManager() {}
 
-	virtual void update(float t) { pool.Update(t); }               // actualiza la pool
+	virtual void update(float t) { pool.Update(t);  if (registry != nullptr)registry->updateForces(t); } // actualiza la pool
 
 	// establece un registro de particulas y se lo da a la Pool
-	virtual inline void setForcesRegistry(ParticleForceRegistry<Particle>* registry_) { pool.setForcesRegistry(registry_); }
+	virtual inline void createForcesRegistry() { PManager::createForcesRegistry(); pool.setForcesRegistry(registry); }
 	// añade una fuerza al registro
 	virtual inline void addForceGenrator(ParticleForceGenerator* generator_) { pool.addForceGenrator(generator_); }
 

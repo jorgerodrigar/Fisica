@@ -9,8 +9,8 @@ public:
 	PManager() {}
 
 	// establece los registros
-	virtual inline void setForcesRegistry(ParticleForceRegistry<Particle>* registry_) { registry = registry_; }
+	virtual inline void createForcesRegistry() { registry = new ParticleForceRegistry<Particle>(); }
 
-	virtual ~PManager() {}
+	virtual ~PManager() { delete registry; registry = nullptr; }
 };
 
