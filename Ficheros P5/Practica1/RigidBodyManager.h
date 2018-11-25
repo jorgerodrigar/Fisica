@@ -10,7 +10,7 @@ private:
 	float vel;                             // magnitud de la velocidad con la que salen
 	physx::PxScene* gScene = nullptr;      // variables necesarias para crearlos
 	physx::PxPhysics* gPhysics = nullptr;
-	const int MAXRIGIDBODYS = 20;          // maximo de generaciones
+	const int MAXRIGIDBODYS = 30;          // maximo de generaciones
 	int currentRigidBodys = 0;             // numero de generaciones actuales
 
 	void createNewRigidBody(Vector3 dir);  // crea un RigidBody en la posicion dada, con la vel y dir dadas

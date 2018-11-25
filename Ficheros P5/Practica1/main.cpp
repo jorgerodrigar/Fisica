@@ -49,6 +49,8 @@ const float timeShoot = 0.5;
 
 //--------------------------------------------------------
 
+//-----------------------MIS METODOS----------------------
+
 void initMyVariables() {
 	// suelo
 	physx::PxShape* shape = CreateShape(physx::PxBoxGeometry(100, 0.1, 100));
@@ -102,6 +104,8 @@ void keyPressOfMyVariables(unsigned char key) {
 	for (auto f : forces)f->handleEvent(key);
 }
 
+//-----------------------------------------------------
+
 // Initialize physics engine
 void initPhysics(bool interactive)
 {
@@ -122,11 +126,11 @@ void initPhysics(bool interactive)
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	sceneDesc.gravity = { 0, -60, 0 };
+	sceneDesc.gravity = { 0, -60, 0 }; // añado gravedad
 	gScene = gPhysics->createScene(sceneDesc);
 	// ------------------------------------------------------
 
-	initMyVariables();
+	initMyVariables(); // inicializa todas mis variables y sistemas
 }
 
 
@@ -140,7 +144,7 @@ void stepPhysics(bool interactive, double t)
 	gScene->simulate(t);
 	gScene->fetchResults(true);
 
-	updateMyVariables(t);
+	updateMyVariables(t); // actualiza la logica de todos mis sistemas
 }
 
 // Function to clean data
@@ -160,7 +164,7 @@ void cleanupPhysics(bool interactive)
 	
 	gFoundation->release();
 
-	deleteMyVariables();
+	deleteMyVariables(); // borra todas mis variables y sistemas
 }
 
 // Function called when a key is pressed
@@ -168,7 +172,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 {
 	PX_UNUSED(camera);
 
-	keyPressOfMyVariables(key);
+	keyPressOfMyVariables(key); // gestiona los eventos de input de todos mis sistemas
 }
 
 int main(int, const char*const*)
