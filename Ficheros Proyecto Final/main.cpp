@@ -13,6 +13,7 @@
 #include "ParticleForceRegistry.h"
 #include "ParticleAnchoredSpring.h"
 #include "Ground.h"
+#include "Player.h"
 
 using namespace physx;
 
@@ -32,19 +33,25 @@ PxScene*				gScene      = NULL;
 
 //---------------------MIS VARIABLES----------------------
 
-// registro de fuerzas que actuan sobre el jugador
-ParticleForceRegistry<PxRigidDynamic>* registry = nullptr;
+// logica de juego
+bool playing = false;  // indica si la partida a empezado
+
+// objetos
+Ground* ground = nullptr;
+Player* player = nullptr;
+
+std::vector<RigidObject*> objects;
 
 // managers
-Ground* ground = nullptr;
-PxRigidDynamic* player = nullptr;
-
 std::vector<Manager*> managers;
 
 // fuerzas
-ParticleBuoyancy* flotamiento = nullptr;
 ParticleAnchoredSpring* muelleCamera = nullptr;
+
 std::vector<ParticleForceGenerator*> forces;
+
+// registro de fuerzas que actuan sobre el jugador
+ParticleForceRegistry<PxRigidDynamic>* registry = nullptr;
 
 //--------------------------------------------------------
 
@@ -52,37 +59,36 @@ std::vector<ParticleForceGenerator*> forces;
 
 void initMyVariables() {
 	// jugador
-	PxShape* playerShape = CreateShape(physx::PxSphereGeometry(5));
-	physx::PxTransform playerTrans({ 0, 20, 0 });
-	player = gPhysics->createRigidDynamic(playerTrans);
-	player->attachShape(*playerShape);
-	RenderItem* playeRenderItem = new RenderItem(playerShape, player, { 1, 0, 0, 1 });
-	physx::PxRigidBodyExt::updateMassAndInertia(*player, 10);
-	player->setLinearVelocity({-10, 0, 0});
-	gScene->addActor(*player);
-	playerShape->release();
+	player = new Player(gScene, gPhysics);
+	//player->setLinearVelocity({ -100, 0, 0 });
+	objects.push_back(player);
 
 	// suelo
-	ground = new Ground(gScene, gPhysics, &playerTrans.p, 10);
-	managers.push_back(ground);
+	ground = new Ground(gScene, gPhysics, 10);
+	objects.push_back(ground);
 
 	// fuerzas
-	flotamiento = new ParticleBuoyancy(4, 4, 24, 10);
 	//muelleCamera = new ParticleAnchoredSpring(&playerTrans.p, 1, 1);
-	forces.push_back(flotamiento);
-	forces.push_back(muelleCamera);
+	//forces.push_back(muelleCamera);
 
 	// registro
 	registry = new ParticleForceRegistry<PxRigidDynamic>();
-	//registry->add(player, muelleCamera);
+	//registry->add(player->getObject(), muelleCamera);
 }
 
 void updateMyVariables(double t) {
+	ground->setPlayerPos(player->getObject()->getGlobalPose().p);
+	for (auto o : objects)o->update(t);
 	for (auto m : managers)m->update(t);
 	registry->updateForces(t);
 }
 
 void deleteMyVariables() {
+	for (auto o : objects) {
+		delete o;
+		o = nullptr;
+	}
+
 	for (auto m : managers) {
 		delete m;
 		m = nullptr;
@@ -95,6 +101,7 @@ void deleteMyVariables() {
 }
 
 void keyPressOfMyVariables(unsigned char key) {
+	for (auto o : objects)o->handleEvent(key);
 	for (auto m : managers)m->handleEvent(key);
 	for (auto f : forces)f->handleEvent(key);
 }
@@ -168,6 +175,19 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	PX_UNUSED(camera);
 
 	keyPressOfMyVariables(key); // gestiona los eventos de input de todos mis sistemas
+
+	switch (toupper(key))
+	{
+	case 'W': {  // al pulsar W la partida comienza
+		if (!playing) {
+			player->setLinearVelocity({ -100, 0, 0 });
+			playing = true;
+		}
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 int main(int, const char*const*)
