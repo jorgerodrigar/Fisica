@@ -1,18 +1,21 @@
 #pragma once
 #include "RigidObject.h"
 
+// estados en los que puede encontrarse el jugador
 enum PlayerPosition {
 	LEFT,
 	MIDDLE,
 	RIGHT
 };
 
-class Player:public RigidObject
+class Player:public RigidObject              // representa al jugador
 {
 private:
 	physx::PxRigidDynamic* player = nullptr;
 
-	PlayerPosition actualPosition = MIDDLE;
+	PlayerPosition actualPosition = MIDDLE;  // posicion inicial en el medio
+	const float lateralMovement = 30;        // distancia lateral que recorre
+	const float jumpVelocity = 75;           // velocidad de salto
 	bool jump = true;
 
 public:

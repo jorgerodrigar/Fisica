@@ -128,7 +128,7 @@ void initPhysics(bool interactive)
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
-	sceneDesc.gravity = { 0, -60, 0 }; // añado gravedad
+	sceneDesc.gravity = { 0, -150, 0 }; // añado gravedad
 	gScene = gPhysics->createScene(sceneDesc);
 	// ------------------------------------------------------
 
