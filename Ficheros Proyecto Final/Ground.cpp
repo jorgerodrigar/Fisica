@@ -28,6 +28,6 @@ void Ground::update(float t) {
 		grounds[first]->setGlobalPose({ grounds[last]->getGlobalPose().p.x - length, grounds[last]->getGlobalPose().p.y, grounds[last]->getGlobalPose().p.z});
 		last = first;
 		first++;
-		if (first >= numGrounds)first = 0;
+		if (first >= numGrounds - 1)first = 0;
 	}
 }

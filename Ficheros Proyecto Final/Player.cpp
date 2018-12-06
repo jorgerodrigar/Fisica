@@ -14,8 +14,7 @@ Player::Player(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos
 }
 
 void Player::update(float t) {
-	player->setLinearDamping(0);
-	player->setAngularDamping(0);
+	if (start)player->setLinearVelocity({ vel, player->getLinearVelocity().y, 0 });
 }
 
 void Player::handleEvent(unsigned char key) {

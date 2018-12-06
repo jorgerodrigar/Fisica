@@ -11,12 +11,17 @@ enum PlayerPosition {
 class Player:public RigidObject              // representa al jugador
 {
 private:
-	physx::PxRigidDynamic* player = nullptr;
+	physx::PxRigidDynamic* player = nullptr; // cuerpo del jugador
 
+	// movimiento
 	PlayerPosition actualPosition = MIDDLE;  // posicion inicial en el medio
+	float vel = 0;                           // velocidad lineal de avance
+	const float jumpVelocity = 75;           // velocidad lineal de salto
 	const float lateralMovement = 30;        // distancia lateral que recorre
-	const float jumpVelocity = 75;           // velocidad de salto
-	bool jump = true;
+
+	// logica
+	bool start = false;                      // indica si el juego ha empezado o no
+	bool jump = true;                        // indica si puede saltar o no
 
 public:
 	Player(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos = {0, -34, 0}, float tam = 5, Vector4 color = { 1, 0, 0, 1 });
@@ -26,8 +31,9 @@ public:
 	virtual void handleEvent(unsigned char key);
 
 	physx::PxRigidDynamic* getObject() { return player; }
-	void setLinearVelocity(Vector3 vel_){ player->setLinearVelocity(vel_); }
+	inline void setVelocity(float vel_) { vel = vel_; }
 	inline void playerCanJump() { jump = true; }
+	inline void startRunning() { start = true; }
 
 	virtual ~Player() {}
 };

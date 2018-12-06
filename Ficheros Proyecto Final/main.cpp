@@ -37,7 +37,7 @@ ContactReportCallback gContactReportCallback;
 // logica de juego
 bool playing = false;              // indica si la partida a empezado
 const float PLAYERVELOCITY = -100; // velocidad del jugador
-const float CAMERAVELOCITY = 0.58; // velocidad de la camara
+const float CAMERAVELOCITY = 1.65; // velocidad de la camara
 
 // objetos
 Ground* ground = nullptr;
@@ -63,6 +63,7 @@ ParticleForceRegistry<PxRigidDynamic>* registry = nullptr;
 void initMyVariables() {
 	// jugador
 	player = new Player(gScene, gPhysics);
+	player->setVelocity(PLAYERVELOCITY);
 	objects.push_back(player);
 
 	// suelo
@@ -186,7 +187,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 	case 'W': {  // al pulsar W la partida comienza
 		if (!playing) {
-			player->setLinearVelocity({ PLAYERVELOCITY, 0, 0 });
+			player->startRunning();
 			playing = true;
 		}
 		break;
