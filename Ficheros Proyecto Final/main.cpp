@@ -14,6 +14,7 @@
 #include "ParticleAnchoredSpring.h"
 #include "Ground.h"
 #include "Player.h"
+#include "Obstacles.h"
 
 using namespace physx;
 
@@ -42,6 +43,7 @@ const float CAMERAVELOCITY = 1.65; // velocidad de la camara
 // objetos
 Ground* ground = nullptr;
 Player* player = nullptr;
+Obstacles* obstacles = nullptr;
 
 std::vector<RigidObject*> objects;
 
@@ -49,7 +51,6 @@ std::vector<RigidObject*> objects;
 std::vector<Manager*> managers;
 
 // fuerzas
-ParticleAnchoredSpring* muelleCamera = nullptr;
 
 std::vector<ParticleForceGenerator*> forces;
 
@@ -70,17 +71,19 @@ void initMyVariables() {
 	ground = new Ground(gScene, gPhysics, 12);
 	objects.push_back(ground);
 
+	// obstaculos
+	obstacles = new Obstacles(gScene, gPhysics, 5);
+	objects.push_back(obstacles);
+
 	// fuerzas
-	//muelleCamera = new ParticleAnchoredSpring(&playerTrans.p, 1, 1);
-	//forces.push_back(muelleCamera);
 
 	// registro
 	registry = new ParticleForceRegistry<PxRigidDynamic>();
-	//registry->add(player->getObject(), muelleCamera);
 }
 
 void updateMyVariables(double t) {
 	ground->setPlayerPos(player->getObject()->getGlobalPose().p);
+	obstacles->setPlayerPos(player->getObject()->getGlobalPose().p);
 	for (auto o : objects)o->update(t);
 	for (auto m : managers)m->update(t);
 	registry->updateForces(t);

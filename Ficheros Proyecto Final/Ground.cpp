@@ -5,7 +5,7 @@ Ground::Ground(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numGrou
 {
 	// creo numGrounds 'trozos' de suelo, uno detras de otro y los guardo en el vector
 	for (int i = 0; i < numGrounds; i++) {  
-		physx::PxShape* shape = CreateShape(physx::PxBoxGeometry(300, 0.1, 75));
+		physx::PxShape* shape = CreateShape(physx::PxBoxGeometry(length, 0.1, width));
 		physx::PxTransform transform({ pos.x - length * i, pos.y, pos.z });
 		physx::PxRigidStatic* suelo = gPhysics->createRigidStatic(transform);
 		suelo->attachShape(*shape);
