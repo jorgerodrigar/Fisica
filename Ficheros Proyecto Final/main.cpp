@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "core.hpp"
-
 #include "RenderUtils.hpp"
+#include "callbacks.hpp"
 
 #include "RigidBodyManager.h"
 #include "ParticleBuoyancy.h"
@@ -30,11 +30,14 @@ PxPvd*                  gPvd        = NULL;
 
 PxDefaultCpuDispatcher*	gDispatcher = NULL;
 PxScene*				gScene      = NULL;
+ContactReportCallback gContactReportCallback;
 
 //---------------------MIS VARIABLES----------------------
 
 // logica de juego
-bool playing = false;  // indica si la partida a empezado
+bool playing = false;              // indica si la partida a empezado
+const float PLAYERVELOCITY = -100; // velocidad del jugador
+const float CAMERAVELOCITY = 0.58; // velocidad de la camara
 
 // objetos
 Ground* ground = nullptr;
@@ -60,11 +63,10 @@ ParticleForceRegistry<PxRigidDynamic>* registry = nullptr;
 void initMyVariables() {
 	// jugador
 	player = new Player(gScene, gPhysics);
-	//player->setLinearVelocity({ -100, 0, 0 });
 	objects.push_back(player);
 
 	// suelo
-	ground = new Ground(gScene, gPhysics, 10);
+	ground = new Ground(gScene, gPhysics, 12);
 	objects.push_back(ground);
 
 	// fuerzas
@@ -81,6 +83,8 @@ void updateMyVariables(double t) {
 	for (auto o : objects)o->update(t);
 	for (auto m : managers)m->update(t);
 	registry->updateForces(t);
+
+	if (playing)GetCamera()->handleAnalogMove(0, CAMERAVELOCITY);
 }
 
 void deleteMyVariables() {
@@ -125,10 +129,12 @@ void initPhysics(bool interactive)
 
 	// For Solid Rigids +++++++++++++++++++++++++++++++++++++
 	PxSceneDesc sceneDesc(gPhysics->getTolerancesScale());
+	sceneDesc.gravity = PxVec3(0.0f, -9.8f, 0.0f);
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
-	sceneDesc.filterShader = PxDefaultSimulationFilterShader;
+	sceneDesc.filterShader = contactReportFilterShader;
 	sceneDesc.gravity = { 0, -150, 0 }; // añado gravedad
+	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 	// ------------------------------------------------------
 
@@ -180,7 +186,7 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	{
 	case 'W': {  // al pulsar W la partida comienza
 		if (!playing) {
-			player->setLinearVelocity({ -100, 0, 0 });
+			player->setLinearVelocity({ PLAYERVELOCITY, 0, 0 });
 			playing = true;
 		}
 		break;
@@ -189,6 +195,14 @@ void keyPress(unsigned char key, const PxTransform& camera)
 		break;
 	}
 }
+
+void onCollision(physx::PxActor* actor1, physx::PxActor* actor2)
+{
+	PX_UNUSED(actor1);
+	PX_UNUSED(actor2);
+	player->playerCanJump();
+}
+
 
 int main(int, const char*const*)
 {

@@ -24,7 +24,7 @@ Ground::Ground(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numGrou
 // si el jugador pasa del 'trozo' mas cercano, este se situa detras del ultimo, y asi sucesivamente
 // da sensacion de suelo infinito usando solo numGround 'trozos'
 void Ground::update(float t) {
-	if (playerPos.x < grounds[first]->getGlobalPose().p.x) {
+	if (playerPos.x < grounds[first + 1]->getGlobalPose().p.x) {
 		grounds[first]->setGlobalPose({ grounds[last]->getGlobalPose().p.x - length, grounds[last]->getGlobalPose().p.y, grounds[last]->getGlobalPose().p.z});
 		last = first;
 		first++;

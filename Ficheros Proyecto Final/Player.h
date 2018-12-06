@@ -27,6 +27,7 @@ public:
 
 	physx::PxRigidDynamic* getObject() { return player; }
 	void setLinearVelocity(Vector3 vel_){ player->setLinearVelocity(vel_); }
+	inline void playerCanJump() { jump = true; }
 
 	virtual ~Player() {}
 };

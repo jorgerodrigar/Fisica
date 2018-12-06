@@ -8,7 +8,7 @@ Player::Player(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos
 	player = gPhysics->createRigidDynamic(playerTrans);
 	player->attachShape(*playerShape);
 	RenderItem* playeRenderItem = new RenderItem(playerShape, player, color);
-	physx::PxRigidBodyExt::updateMassAndInertia(*player, 1000);
+	physx::PxRigidBodyExt::updateMassAndInertia(*player, 1);
 	gScene->addActor(*player);
 	playerShape->release();
 }
@@ -16,8 +16,6 @@ Player::Player(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos
 void Player::update(float t) {
 	player->setLinearDamping(0);
 	player->setAngularDamping(0);
-
-	//if (player->getLinearVelocity().y == 0)jump = true;
 }
 
 void Player::handleEvent(unsigned char key) {
@@ -44,11 +42,11 @@ void Player::handleEvent(unsigned char key) {
 		break;
 	}
 	case ' ': {  // si se pulsa espacio y se puede saltar, salta
-		//if (jump) {
+		if (jump) {
 			player->setLinearVelocity({ player->getLinearVelocity().x, 
 				jumpVelocity, player->getLinearVelocity().z });
 			jump = false;
-		//}
+		}
 		break;
 	}
 	default:
