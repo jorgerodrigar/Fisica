@@ -1,7 +1,7 @@
 #include "Player.h"
 
-Player::Player(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos, float tam, Vector4 color):
-	RigidObject(gScene_, gPhysics_)
+Player::Player(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos_, float tam, Vector4 color):
+	RigidObject(gScene_, gPhysics_, pos_)
 {
 	physx::PxShape* playerShape = CreateShape(physx::PxSphereGeometry(tam));
 	physx::PxTransform playerTrans(pos);
@@ -51,4 +51,11 @@ void Player::handleEvent(unsigned char key) {
 	default:
 		break;
 	}
+}
+
+void Player::resetParameters() {  // el jugador vuelve a su posicion y velocidad iniciales
+	start = false;
+	actualPosition = MIDDLE;
+	player->setLinearVelocity({ 0, 0, 0 });
+	player->setGlobalPose(physx::PxTransform(pos)); 
 }

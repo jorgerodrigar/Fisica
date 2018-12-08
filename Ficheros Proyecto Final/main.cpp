@@ -15,6 +15,8 @@
 #include "Ground.h"
 #include "Player.h"
 #include "Obstacles.h"
+#include "FireWorkManager.h"
+#include "GravityForce.h"
 
 using namespace physx;
 
@@ -36,11 +38,17 @@ ContactReportCallback gContactReportCallback;
 //---------------------MIS VARIABLES----------------------
 
 // constantes
+const float GRAVITY = -150;                             // gravedad que afectara a los rigidos
 const float PLAYERVELOCITY = -100;                      // velocidad del jugador
+const Vector3 PLAYERPOSITION = { 0, -30, 0 };           // posicion inicial del jugador
 const Vector3 CAMERAPOSITION = { 200.0f, 50.0f, 0.0f }; // posicion inicial de la camara
+const Vector3 GROUNDPOSITION = { 0, -35, 0 };           // posicion inicial del suelo
 
 // logica de juego
-bool playing = false;                                   // indica si la partida a empezado
+bool running = false;                                   // indica si la partida esta corriendo
+bool gameOver = false;                                  // indica si el jugador ha perdido
+Particle* deadPlayer = nullptr;                         // representa graficamente la posicion en la que el jugador ha muerto
+bool record = false;                                    // flag para controlar que solo se llame una vez a los fuegos cada vez que el jugador supera su marca
 
 // objetos
 Ground* ground = nullptr;                               // suelo sobre el que se desarrolla el juego
@@ -48,17 +56,17 @@ Player* player = nullptr;                               // jugador
 physx::PxRigidDynamic* cameraObject = nullptr;          // objeto que 'movera' la camara
 Obstacles* obstacles = nullptr;                         // gestor de obstaculos
 
-std::vector<RigidObject*> objects;
+std::vector<RigidObject*> rigidObjects;
 
 // managers
+FireWorkManager* fireWorkManager = nullptr;
+
 std::vector<Manager*> managers;
 
 // fuerzas
+GravityForce* gravityForce = nullptr;
 
 std::vector<ParticleForceGenerator*> forces;
-
-// registro de fuerzas que actuan sobre el jugador
-ParticleForceRegistry<PxRigidDynamic>* registry = nullptr;
 
 //--------------------------------------------------------
 
@@ -66,13 +74,13 @@ ParticleForceRegistry<PxRigidDynamic>* registry = nullptr;
 
 void initMyVariables() {
 	// jugador
-	player = new Player(gScene, gPhysics);
+	player = new Player(gScene, gPhysics, PLAYERPOSITION);
 	player->setVelocity(PLAYERVELOCITY);
-	objects.push_back(player);
+	rigidObjects.push_back(player);
 
 	// suelo
-	ground = new Ground(gScene, gPhysics, 12);
-	objects.push_back(ground);
+	ground = new Ground(gScene, gPhysics, 12, GROUNDPOSITION);
+	rigidObjects.push_back(ground);
 
 	// gestor de la posicion de la camara (rigidBody situado en la posicion en la que debe estar la camara)
 	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(5));
@@ -83,35 +91,74 @@ void initMyVariables() {
 	shape->release();
 
 	// obstaculos
-	obstacles = new Obstacles(gScene, gPhysics, 10);
-	objects.push_back(obstacles);
+	obstacles = new Obstacles(gScene, gPhysics, 10, PLAYERPOSITION);
+	rigidObjects.push_back(obstacles);
 
 	// fuerzas
+	gravityForce = new GravityForce({ 0, -100, 0 });
+	forces.push_back(gravityForce);
 
-	// registro
-	registry = new ParticleForceRegistry<PxRigidDynamic>();
+	// managers
+	fireWorkManager = new FireWorkManager();
+	managers.push_back(fireWorkManager);
 }
 
 void cameraUpdate() {
-	if (playing)cameraObject->setLinearVelocity({ PLAYERVELOCITY, 0, 0 }); // si estamos jugando, se le aplica al gestor de la camara la misma vel que al jugador
+	if (running)cameraObject->setLinearVelocity({ PLAYERVELOCITY, 0, 0 });    // si estamos jugando, se le aplica al gestor de la camara la misma vel que al jugador
 	physx::PxTransform transform({ cameraObject->getGlobalPose().p.x, CAMERAPOSITION.y, cameraObject->getGlobalPose().p.z });
-	cameraObject->setGlobalPose(transform);                                // para que no le afecte la gravedad
-	GetCamera()->setEye(cameraObject->getGlobalPose().p);                  // la camara se pondra en la posicion de su gestor
+	cameraObject->setGlobalPose(transform);                                   // para que no le afecte la gravedad
+	GetCamera()->setEye(cameraObject->getGlobalPose().p);                     // la camara se pondra en la posicion de su gestor
+}
+
+void fireWorks() {  // llamado cuando el jugador supera su ultima marca, lanza fuegos artificiales
+	fireWorkManager->setPosition({ deadPlayer->getPosition().x - 500, deadPlayer->getPosition().y, deadPlayer->getPosition().z });
+	for (int i = 0; i < 4; i++)fireWorkManager->FireworksCreate(AMARILLO);
+}
+
+void gameLogic(double t) {            // si la camara pasa al jugador, es que ha perdido
+	if (cameraObject->getGlobalPose().p.x < player->getObject()->getGlobalPose().p.x + 150) {
+		running = false;                                                   
+		gameOver = true;
+
+		if (deadPlayer == nullptr) {  // si aun no habia muerto, pintamos la posicion donde lo ha hecho
+			physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(5));
+			RenderItem* renderItem = new RenderItem(shape, Vector4(1.0, 0.0, 0.0, 0.0));
+			deadPlayer = new Particle(renderItem, player->getObject()->getGlobalPose().p);
+			shape->release();
+		}                             // si ya habia muerto, actualizamos la posicion donde lo ha hecho
+		else deadPlayer->setPosition(player->getObject()->getGlobalPose().p); 
+	}
+
+	if (gameOver) {                   // si el jugador ha perdido, reestablecemos parametros
+		gameOver = false;
+		record = false;
+		cameraObject->setLinearVelocity({ 0, 0, 0 });
+		cameraObject->setGlobalPose(PxTransform(CAMERAPOSITION));
+		for (auto o : rigidObjects)o->resetParameters();
+	}
+
+	if (deadPlayer != nullptr) {      // si el jugador ha muerto y ha superado su ultima marca, lanzamos fuegos artificiales
+		deadPlayer->update(t);
+		if (!record && player->getObject()->getGlobalPose().p.x < deadPlayer->getPosition().x) {
+			fireWorks();
+			record = true;
+		}
+	}
 }
 
 void updateMyVariables(double t) {
 	ground->setPlayerPos(player->getObject()->getGlobalPose().p);
 	obstacles->setPlayerPos(player->getObject()->getGlobalPose().p);
 
-	for (auto o : objects)o->update(t);
+	for (auto o : rigidObjects)o->update(t);
 	for (auto m : managers)m->update(t);
 
-	registry->updateForces(t);
 	cameraUpdate(); // movimiento de la camara
+	gameLogic(t);    // logica del juego
 }
 
 void deleteMyVariables() {
-	for (auto o : objects) {
+	for (auto o : rigidObjects) {
 		delete o;
 		o = nullptr;
 	}
@@ -125,10 +172,13 @@ void deleteMyVariables() {
 		delete f;
 		f = nullptr;
 	}
+
+	delete deadPlayer;
+	deadPlayer = nullptr;
 }
 
 void keyPressOfMyVariables(unsigned char key) {
-	for (auto o : objects)o->handleEvent(key);
+	for (auto o : rigidObjects)o->handleEvent(key);
 	for (auto m : managers)m->handleEvent(key);
 	for (auto f : forces)f->handleEvent(key);
 }
@@ -156,7 +206,7 @@ void initPhysics(bool interactive)
 	gDispatcher = PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = gDispatcher;
 	sceneDesc.filterShader = contactReportFilterShader;
-	sceneDesc.gravity = { 0, -150, 0 }; // añado gravedad
+	sceneDesc.gravity = { 0, GRAVITY, 0 }; // añado gravedad
 	sceneDesc.simulationEventCallback = &gContactReportCallback;
 	gScene = gPhysics->createScene(sceneDesc);
 	// ------------------------------------------------------
@@ -208,9 +258,9 @@ void keyPress(unsigned char key, const PxTransform& camera)
 	switch (toupper(key))
 	{
 	case 'W': {  // al pulsar W la partida comienza
-		if (!playing) {
+		if (!running) {
 			player->startRunning();
-			playing = true;
+			running = true;
 		}
 		break;
 	}

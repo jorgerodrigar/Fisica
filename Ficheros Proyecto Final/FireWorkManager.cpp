@@ -1,6 +1,6 @@
 #include "FireWorkManager.h"
 
-FireWorkManager::FireWorkManager() {
+FireWorkManager::FireWorkManager(Vector3 p_):position(p_) {
 	rules.resize(3);       // habra tres tipos de reglas
 	initFireworkRules();
 }
@@ -66,7 +66,7 @@ void FireWorkManager::FireworksCreate(Tipo type, FireWork* parent)
 	int size = fireworks.size(); // auxiliar, mas tarde comprobaremos el num de fworks ha aumentado (se ha añadido o se ha reutilizado)
 	FireWorkRule* rule = GetRuleFromType(type);
 	FireWork* newFirework = AllocNewFirework();
-	rule->create(type, newFirework, parent);
+	rule->create(type, newFirework, position, parent);
 
 	// si tenemos un registro y no es un fireWork reutilizado, 
 	// le aplicamos al nuevo newFirework todas las fuerzas que tengamos

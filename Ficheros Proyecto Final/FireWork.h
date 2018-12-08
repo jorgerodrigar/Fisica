@@ -13,7 +13,7 @@ private:
 	Tipo type;     // tipo-> color que tendra
 	float age;     // edad-> al llegar a 0 muere
 public:
-	FireWork(RenderItem* renderItem) :Particle(renderItem) {}
+	FireWork(RenderItem* renderItem, Vector3 p_ = { 0.0, 0.0, 0.0 }) :Particle(renderItem, p_) {}
 
 	bool update(float t) {
 		Particle::update(t); // ejecuta update de Particle y devuelve si debe morir o no

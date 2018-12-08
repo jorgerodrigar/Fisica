@@ -1,7 +1,7 @@
 #include "Ground.h"
 
 Ground::Ground(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numGrounds_, Vector3 pos_, float width_, float length_):
-	RigidObject(gScene_, gPhysics_), numGrounds(numGrounds_), pos(pos_), width(width_), length(length_)
+	RigidObject(gScene_, gPhysics_, pos_), numGrounds(numGrounds_), width(width_), length(length_)
 {
 	// creo numGrounds 'trozos' de suelo, uno detras de otro y los guardo en el vector
 	for (int i = 0; i < numGrounds; i++) {  
@@ -29,5 +29,11 @@ void Ground::update(float t) {
 		last = first;
 		first++;
 		if (first >= numGrounds - 1)first = 0;
+	}
+}
+
+void Ground::resetParameters() {  // los 'trozos' de suelo vuelven a su posicion inicial
+	for (int i = 0; i < numGrounds; i++) {
+		grounds[i]->setGlobalPose(physx::PxTransform({ pos.x - length * i, pos.y, pos.z }));
 	}
 }

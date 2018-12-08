@@ -42,7 +42,7 @@ public:
 	}
 
 	// crea un nuevo FireWork 
-	void create(Tipo type, FireWork* firework, FireWork* fParent = NULL)const {
+	void create(Tipo type, FireWork* firework, Vector3 pos = { 0, 0, 0 }, FireWork* fParent = NULL)const {
 		firework->setType(type);
 		firework->setAge(rand() % (int)maxAge + (int)minAge);
 
@@ -55,10 +55,7 @@ public:
 			vel += aux->getVelocityVector();
 		}
 		else {
-			Vector3 start = { 0.0, 0.0, 0.0 };
-			int x = rand() % 3;
-			start.x = 5.0*x;
-			firework->setPosition(start);
+			firework->setPosition(pos);
 		}
 
 		velX += rand() % (int)maxVelocity.x + minVelocity.x;

@@ -10,6 +10,7 @@ class FireWorkManager:public PManager {                          // clase que al
 private:
 	std::vector<FireWorkRule> rules;                            // reglas que seguiran los fireWorks
 	std::vector<FireWork*> fireworks;                           // vector de fireWorks
+	Vector3 position = { 0, 0, 0 };                             // posicion desde la que salen los fireWorks
 
 	void initFireworkRules();                                   // inicializa las reglas que tendran los fuegos artificiales
 	void create(Tipo type, unsigned count, FireWork* firework); // crea count fuegos de tipo type y padre firework
@@ -18,12 +19,14 @@ private:
 	void FireworksUpdate(float t);                              // actualiza la logica de cada fuego artificial
 
 public:
-	FireWorkManager();                                          // inicializa las reglas que tendran los fuegos artificiales
+	FireWorkManager(Vector3 p_ = { 0.0, 0.0, 0.0 });            // inicializa las reglas que tendran los fuegos artificiales
 
 	void FireworksCreate(Tipo type, FireWork* parent = NULL);   // crea un fuego artificial de tipo type y con padre o no
 
 	virtual void update(float t) { FireworksUpdate(t); if (registry != nullptr)registry->updateForces(t); }
 	virtual void handleEvent(unsigned char key);
+
+	inline void setPosition(Vector3 p_) { position = p_; }
 
 	virtual ~FireWorkManager();                                 // elimina todos los fuegos artificiales
 };

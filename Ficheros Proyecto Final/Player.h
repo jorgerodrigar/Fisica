@@ -24,11 +24,11 @@ private:
 	bool jump = true;                        // indica si puede saltar o no
 
 public:
-	Player(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos = {0, -34, 0}, float tam = 5, Vector4 color = { 1, 0, 0, 1 });
+	Player(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos_, float tam = 5, Vector4 color = { 1, 0, 0, 1 });
 
 	virtual void update(float t);
-
 	virtual void handleEvent(unsigned char key);
+	virtual void resetParameters();
 
 	physx::PxRigidDynamic* getObject() { return player; }
 	inline void setVelocity(float vel_) { vel = vel_; }

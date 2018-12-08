@@ -4,7 +4,7 @@
 class Obstacles : public RigidObject    // gestiona los obstaculos
 {
 private:
-	Vector3 playerPos = { 0, 0, 0 };    // posicion del jugador (habra que ir actualizandola)
+	Vector3 playerPos = { 0, 0, 0 };    // posicion actual del jugador (habra que ir actualizandola)
 	Vector3 lastPosition = { 0, 0, 0 }; // ultima posicion donde se coloco un obstaculo
 	int first, last;                    // direcciones del primer y ultimo obstaculo en el vector
 
@@ -30,10 +30,11 @@ private:
 	Vector3 randomizePos(int i);       // establece una posicion aleatoria
 
 public:
-	Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_);
+	Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_, Vector3 pos_);
 
 	virtual void update(float t);
 	virtual void handleEvent(unsigned char key) {}
+	virtual void resetParameters();
 
 	inline void setPlayerPos(Vector3 pos_) { playerPos = pos_; } // actualiza la posicion del jugador
 

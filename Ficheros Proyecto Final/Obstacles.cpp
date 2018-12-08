@@ -16,8 +16,8 @@ Vector3 Obstacles::randomizePos(int i) {
 	return lastPosition;
 }
 
-Obstacles::Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_) :
-	RigidObject(gScene_, gPhysics_), numObstacles(numObstacles_)
+Obstacles::Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_, Vector3 pos_) :
+	RigidObject(gScene_, gPhysics_, pos_), numObstacles(numObstacles_)
 {
 	for (int i = 0; i < numObstacles; i++) {
 		float width = rand() % maxWidth + minWidth;
@@ -45,6 +45,14 @@ void Obstacles::update(float t) {
 		last = first;
 		first++;
 		if (first >= numObstacles)first = 0;
+	}
+}
+
+void Obstacles::resetParameters() {  // los obstaculos vuelven a colocarse aleatoriamente respecto a la posicion inicial
+	lastPosition = { 0, 0, 0 };
+	playerPos = pos;
+	for (int i = 0; i < numObstacles; i++) {
+		obstacles[i]->setGlobalPose(physx::PxTransform(randomizePos(i)));
 	}
 }
 
