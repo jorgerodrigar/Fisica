@@ -3,13 +3,17 @@
 
 Vector3 Obstacles::randomizePos(int i) {
 	float x;
-	if(i==0)x = -(rand() % maxFromPlayer + minFromPlayer) + playerPos.x;
-	else x = -(rand() % 200 + minFromLastObstacle) + obstacles[i - 1]->getGlobalPose().p.x;
+	if (lastPosition.x == 0) // si es el primer obstaculo que ponemos, lo ponemos a la distancia minima del jugador
+		x = -(rand() % maxFromPlayer + minFromPlayer) + playerPos.x;
+	else                     // si no, a la distancia minima del obstaculo anterior
+		x = -(rand() % maxFromLastObstacle + minFromLastObstacle) + lastPosition.x;
+
 	float z = rand() % maxLateral;
 	int signo = rand() % 2;
 	if (signo == 1)z = -z;
-	
-	return { x, posY, z };
+	lastPosition = { x, posY, z };
+
+	return lastPosition;
 }
 
 Obstacles::Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_) :
@@ -25,7 +29,7 @@ Obstacles::Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int n
 		gScene->addActor(*obstacle);
 		shape->release();
 
-		obstacles.push_back(obstacle); std::cout << obstacle->getGlobalPose().p.x << " ";
+		obstacles.push_back(obstacle);
 	}
 
 	first = 0;
@@ -35,7 +39,7 @@ Obstacles::Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int n
 // si el jugador pasa del obstaculo mas cercano, este se situa aleatoriamente delante de el, y asi sucesivamente
 // da sensacion de obstaculos infinitos usando solo numObstacles obstaculos
 void Obstacles::update(float t) {
-	if (playerPos.x < obstacles[first]->getGlobalPose().p.x) {
+	if (playerPos.x < obstacles[first]->getGlobalPose().p.x - 200) {
 		Vector3 newPos = randomizePos(first);
 		obstacles[first]->setGlobalPose({ newPos.x, newPos.y, newPos.z });
 		last = first;

@@ -35,15 +35,18 @@ ContactReportCallback gContactReportCallback;
 
 //---------------------MIS VARIABLES----------------------
 
+// constantes
+const float PLAYERVELOCITY = -100;                      // velocidad del jugador
+const Vector3 CAMERAPOSITION = { 200.0f, 50.0f, 0.0f }; // posicion inicial de la camara
+
 // logica de juego
-bool playing = false;              // indica si la partida a empezado
-const float PLAYERVELOCITY = -100; // velocidad del jugador
-const float CAMERAVELOCITY = 1.65; // velocidad de la camara
+bool playing = false;                                   // indica si la partida a empezado
 
 // objetos
-Ground* ground = nullptr;
-Player* player = nullptr;
-Obstacles* obstacles = nullptr;
+Ground* ground = nullptr;                               // suelo sobre el que se desarrolla el juego
+Player* player = nullptr;                               // jugador
+physx::PxRigidDynamic* cameraObject = nullptr;          // objeto que 'movera' la camara
+Obstacles* obstacles = nullptr;                         // gestor de obstaculos
 
 std::vector<RigidObject*> objects;
 
@@ -71,8 +74,16 @@ void initMyVariables() {
 	ground = new Ground(gScene, gPhysics, 12);
 	objects.push_back(ground);
 
+	// gestor de la posicion de la camara (rigidBody situado en la posicion en la que debe estar la camara)
+	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(5));
+	physx::PxTransform transform(CAMERAPOSITION);
+	cameraObject = gPhysics->createRigidDynamic(transform);
+	cameraObject->attachShape(*shape);
+	gScene->addActor(*cameraObject);
+	shape->release();
+
 	// obstaculos
-	obstacles = new Obstacles(gScene, gPhysics, 5);
+	obstacles = new Obstacles(gScene, gPhysics, 10);
 	objects.push_back(obstacles);
 
 	// fuerzas
@@ -81,14 +92,22 @@ void initMyVariables() {
 	registry = new ParticleForceRegistry<PxRigidDynamic>();
 }
 
+void cameraUpdate() {
+	if (playing)cameraObject->setLinearVelocity({ PLAYERVELOCITY, 0, 0 }); // si estamos jugando, se le aplica al gestor de la camara la misma vel que al jugador
+	physx::PxTransform transform({ cameraObject->getGlobalPose().p.x, CAMERAPOSITION.y, cameraObject->getGlobalPose().p.z });
+	cameraObject->setGlobalPose(transform);                                // para que no le afecte la gravedad
+	GetCamera()->setEye(cameraObject->getGlobalPose().p);                  // la camara se pondra en la posicion de su gestor
+}
+
 void updateMyVariables(double t) {
 	ground->setPlayerPos(player->getObject()->getGlobalPose().p);
 	obstacles->setPlayerPos(player->getObject()->getGlobalPose().p);
+
 	for (auto o : objects)o->update(t);
 	for (auto m : managers)m->update(t);
-	registry->updateForces(t);
 
-	if (playing)GetCamera()->handleAnalogMove(0, CAMERAVELOCITY);
+	registry->updateForces(t);
+	cameraUpdate(); // movimiento de la camara
 }
 
 void deleteMyVariables() {
