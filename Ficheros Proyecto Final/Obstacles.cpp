@@ -17,9 +17,9 @@ Vector3 Obstacles::randomizePos(int i) {
 }
 
 Obstacles::Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_, Vector3 pos_) :
-	RigidObject(gScene_, gPhysics_, pos_), numObstacles(numObstacles_)
+	InfiniteObjectsManager(gScene_, gPhysics_, numObstacles_, pos_)
 {
-	for (int i = 0; i < numObstacles; i++) {
+	for (int i = 0; i < numElems; i++) {
 		float width = rand() % maxWidth + minWidth;
 		physx::PxShape* shape = CreateShape(physx::PxBoxGeometry(length, height, width));
 		physx::PxTransform transform(randomizePos(i));
@@ -29,30 +29,33 @@ Obstacles::Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int n
 		gScene->addActor(*obstacle);
 		shape->release();
 
-		obstacles.push_back(obstacle);
+		elems.push_back(obstacle);
 	}
 
 	first = 0;
-	last = numObstacles - 1;
+	last = numElems - 1;
 }
 
 // si el jugador pasa del obstaculo mas cercano, este se situa aleatoriamente delante de el, y asi sucesivamente
-// da sensacion de obstaculos infinitos usando solo numObstacles obstaculos
+// da sensacion de obstaculos infinitos usando solo numElems obstaculos
 void Obstacles::update(float t) {
-	if (playerPos.x < obstacles[first]->getGlobalPose().p.x - 200) {
+	if (playerPos.x < elems[first]->getGlobalPose().p.x - 200) {
 		Vector3 newPos = randomizePos(first);
-		obstacles[first]->setGlobalPose({ newPos.x, newPos.y, newPos.z });
+		elems[first]->setGlobalPose({ newPos.x, newPos.y, newPos.z });
 		last = first;
 		first++;
-		if (first >= numObstacles)first = 0;
+		if (first >= numElems)first = 0;
 	}
 }
 
 void Obstacles::resetParameters() {  // los obstaculos vuelven a colocarse aleatoriamente respecto a la posicion inicial
 	lastPosition = { 0, 0, 0 };
 	playerPos = pos;
-	for (int i = 0; i < numObstacles; i++) {
-		obstacles[i]->setGlobalPose(physx::PxTransform(randomizePos(i)));
+	first = 0;
+	last = numElems - 1;
+
+	for (int i = 0; i < numElems; i++) {
+		elems[i]->setGlobalPose(physx::PxTransform(randomizePos(i)));
 	}
 }
 

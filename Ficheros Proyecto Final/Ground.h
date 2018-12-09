@@ -1,19 +1,11 @@
 #pragma once
-#include "RigidObject.h"
-#include <vector>
+#include "InfiniteObjectsManager.h"
 
-class Ground : public RigidObject  // representa el suelo sobre el que va el jugador
-{                                  // esta dividido en un numero de trozos de suelo
+class Ground : public InfiniteObjectsManager<physx::PxRigidStatic> // representa el suelo sobre el que va el jugador
+{                                             // esta dividido en un numero de trozos de suelo
 private:
-	Vector3 playerPos;             // posicion del jugador (habra que ir actualizandola)
-	int first, last;               // direcciones del primer y ultimo trozo en el vector
-
-	float width;                   // dimensiones de cada trozo
+	float width;                              // dimensiones de cada trozo
 	float length;
-	int numGrounds;                // numero de trozos
-
-	// vector con todos los trozos de suelo
-	std::vector<physx::PxRigidStatic*> grounds;
 
 public:
 	Ground(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numGrounds_, 
@@ -22,8 +14,6 @@ public:
 	virtual void update(float t);
 	virtual void handleEvent(unsigned char key) {}
 	virtual void resetParameters();
-
-	inline void setPlayerPos(Vector3 pos_) { playerPos = pos_; } // actualiza la posicion del jugador
 
 	virtual ~Ground() {}
 };

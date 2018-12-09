@@ -17,6 +17,7 @@
 #include "Obstacles.h"
 #include "FireWorkManager.h"
 #include "GravityForce.h"
+#include "Water.h"
 
 using namespace physx;
 
@@ -43,6 +44,7 @@ const float PLAYERVELOCITY = -100;                      // velocidad del jugador
 const Vector3 PLAYERPOSITION = { 0, -30, 0 };           // posicion inicial del jugador
 const Vector3 CAMERAPOSITION = { 200.0f, 50.0f, 0.0f }; // posicion inicial de la camara
 const Vector3 GROUNDPOSITION = { 0, -35, 0 };           // posicion inicial del suelo
+const Vector3 WATERPOSITION = { 0, -36, 0 };            // posicion inicial del agua
 
 // logica de juego
 bool running = false;                                   // indica si la partida esta corriendo
@@ -55,6 +57,7 @@ Ground* ground = nullptr;                               // suelo sobre el que se
 Player* player = nullptr;                               // jugador
 physx::PxRigidDynamic* cameraObject = nullptr;          // objeto que 'movera' la camara
 Obstacles* obstacles = nullptr;                         // gestor de obstaculos
+Water* water = nullptr;                                 // agua de fondo
 
 std::vector<RigidObject*> rigidObjects;
 
@@ -78,10 +81,6 @@ void initMyVariables() {
 	player->setVelocity(PLAYERVELOCITY);
 	rigidObjects.push_back(player);
 
-	// suelo
-	ground = new Ground(gScene, gPhysics, 12, GROUNDPOSITION);
-	rigidObjects.push_back(ground);
-
 	// gestor de la posicion de la camara (rigidBody situado en la posicion en la que debe estar la camara)
 	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(5));
 	physx::PxTransform transform(CAMERAPOSITION);
@@ -90,9 +89,17 @@ void initMyVariables() {
 	gScene->addActor(*cameraObject);
 	shape->release();
 
+	// suelo
+	ground = new Ground(gScene, gPhysics, 12, GROUNDPOSITION);
+	rigidObjects.push_back(ground);
+
 	// obstaculos
 	obstacles = new Obstacles(gScene, gPhysics, 10, PLAYERPOSITION);
 	rigidObjects.push_back(obstacles);
+
+	// agua
+	water = new Water(gScene, gPhysics, 12, WATERPOSITION);
+	rigidObjects.push_back(water);
 
 	// fuerzas
 	gravityForce = new GravityForce({ 0, -100, 0 });
@@ -103,18 +110,22 @@ void initMyVariables() {
 	managers.push_back(fireWorkManager);
 }
 
+// metodos auxiliares de updateMyVariables...
+void infiniteObjectsUpdate() {
+	ground->setPlayerPos(player->getObject()->getGlobalPose().p);
+	obstacles->setPlayerPos(player->getObject()->getGlobalPose().p);
+	water->setPlayerPos(player->getObject()->getGlobalPose().p);
+}
 void cameraUpdate() {
 	if (running)cameraObject->setLinearVelocity({ PLAYERVELOCITY, 0, 0 });    // si estamos jugando, se le aplica al gestor de la camara la misma vel que al jugador
 	physx::PxTransform transform({ cameraObject->getGlobalPose().p.x, CAMERAPOSITION.y, cameraObject->getGlobalPose().p.z });
 	cameraObject->setGlobalPose(transform);                                   // para que no le afecte la gravedad
 	GetCamera()->setEye(cameraObject->getGlobalPose().p);                     // la camara se pondra en la posicion de su gestor
 }
-
 void fireWorks() {  // llamado cuando el jugador supera su ultima marca, lanza fuegos artificiales
 	fireWorkManager->setPosition({ deadPlayer->getPosition().x - 500, deadPlayer->getPosition().y, deadPlayer->getPosition().z });
 	for (int i = 0; i < 4; i++)fireWorkManager->FireworksCreate(AMARILLO);
 }
-
 void gameLogic(double t) {            // si la camara pasa al jugador, es que ha perdido
 	if (cameraObject->getGlobalPose().p.x < player->getObject()->getGlobalPose().p.x + 150) {
 		running = false;                                                   
@@ -147,14 +158,13 @@ void gameLogic(double t) {            // si la camara pasa al jugador, es que ha
 }
 
 void updateMyVariables(double t) {
-	ground->setPlayerPos(player->getObject()->getGlobalPose().p);
-	obstacles->setPlayerPos(player->getObject()->getGlobalPose().p);
+	infiniteObjectsUpdate(); // actualiza la posicion del jugador en todos los objetos 'infinitos'
 
 	for (auto o : rigidObjects)o->update(t);
 	for (auto m : managers)m->update(t);
 
-	cameraUpdate(); // movimiento de la camara
-	gameLogic(t);    // logica del juego
+	cameraUpdate();         // movimiento de la camara
+	gameLogic(t);           // logica del juego
 }
 
 void deleteMyVariables() {

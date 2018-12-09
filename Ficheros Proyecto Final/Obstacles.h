@@ -1,12 +1,10 @@
 #pragma once
-#include "RigidObject.h"
+#include "InfiniteObjectsManager.h"
 
-class Obstacles : public RigidObject    // gestiona los obstaculos
+class Obstacles : public InfiniteObjectsManager<physx::PxRigidStatic>  // gestiona los obstaculos
 {
 private:
-	Vector3 playerPos = { 0, 0, 0 };    // posicion actual del jugador (habra que ir actualizandola)
 	Vector3 lastPosition = { 0, 0, 0 }; // ultima posicion donde se coloco un obstaculo
-	int first, last;                    // direcciones del primer y ultimo obstaculo en el vector
 
 	// posicion de los obstaculos
 	const int minFromPlayer = 200;
@@ -22,11 +20,6 @@ private:
 	const float length = 5;
 	const float height = 5;
 
-	int numObstacles;                  // numero de obstaculos
-
-	// vector con todos los obstaculos
-	std::vector<physx::PxRigidStatic*> obstacles;
-
 	Vector3 randomizePos(int i);       // establece una posicion aleatoria
 
 public:
@@ -35,8 +28,6 @@ public:
 	virtual void update(float t);
 	virtual void handleEvent(unsigned char key) {}
 	virtual void resetParameters();
-
-	inline void setPlayerPos(Vector3 pos_) { playerPos = pos_; } // actualiza la posicion del jugador
 
 	virtual ~Obstacles() {}
 };
