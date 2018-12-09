@@ -18,6 +18,7 @@
 #include "FireWorkManager.h"
 #include "GravityForce.h"
 #include "Water.h"
+#include "WaterBoxes.h"
 
 using namespace physx;
 
@@ -58,6 +59,7 @@ Player* player = nullptr;                               // jugador
 physx::PxRigidDynamic* cameraObject = nullptr;          // objeto que 'movera' la camara
 Obstacles* obstacles = nullptr;                         // gestor de obstaculos
 Water* water = nullptr;                                 // agua de fondo
+WaterBoxes* boxes = nullptr;                            // cajas que flotan sobre el agua
 
 std::vector<RigidObject*> rigidObjects;
 
@@ -68,6 +70,7 @@ std::vector<Manager*> managers;
 
 // fuerzas
 GravityForce* gravityForce = nullptr;
+ParticleBuoyancy* boxesBuoyancy = nullptr;
 
 std::vector<ParticleForceGenerator*> forces;
 
@@ -88,6 +91,13 @@ void initMyVariables() {
 	cameraObject->attachShape(*shape);
 	gScene->addActor(*cameraObject);
 	shape->release();
+	cameraObject->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true); // para que no le afecte la gravedad
+
+	// fuerzas
+	gravityForce = new GravityForce({ 0, -30, 0 });
+	forces.push_back(gravityForce);
+	boxesBuoyancy = new ParticleBuoyancy(4, 4, -30, 20);
+	forces.push_back(boxesBuoyancy);
 
 	// suelo
 	ground = new Ground(gScene, gPhysics, 12, GROUNDPOSITION);
@@ -101,9 +111,12 @@ void initMyVariables() {
 	water = new Water(gScene, gPhysics, 12, WATERPOSITION);
 	rigidObjects.push_back(water);
 
-	// fuerzas
-	gravityForce = new GravityForce({ 0, -100, 0 });
-	forces.push_back(gravityForce);
+	// cajas flotantes
+	boxes = new WaterBoxes(gScene, gPhysics, 20, PLAYERPOSITION);
+	boxes->addForceGenrator(gravityForce);
+	boxes->addForceGenrator(boxesBuoyancy);
+	boxes->createForcesRegistry();
+	rigidObjects.push_back(boxes);
 
 	// managers
 	fireWorkManager = new FireWorkManager();
@@ -115,11 +128,10 @@ void infiniteObjectsUpdate() {
 	ground->setPlayerPos(player->getObject()->getGlobalPose().p);
 	obstacles->setPlayerPos(player->getObject()->getGlobalPose().p);
 	water->setPlayerPos(player->getObject()->getGlobalPose().p);
+	boxes->setPlayerPos(player->getObject()->getGlobalPose().p);
 }
 void cameraUpdate() {
 	if (running)cameraObject->setLinearVelocity({ PLAYERVELOCITY, 0, 0 });    // si estamos jugando, se le aplica al gestor de la camara la misma vel que al jugador
-	physx::PxTransform transform({ cameraObject->getGlobalPose().p.x, CAMERAPOSITION.y, cameraObject->getGlobalPose().p.z });
-	cameraObject->setGlobalPose(transform);                                   // para que no le afecte la gravedad
 	GetCamera()->setEye(cameraObject->getGlobalPose().p);                     // la camara se pondra en la posicion de su gestor
 }
 void fireWorks() {  // llamado cuando el jugador supera su ultima marca, lanza fuegos artificiales
