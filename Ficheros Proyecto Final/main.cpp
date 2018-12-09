@@ -64,13 +64,14 @@ WaterBoxes* boxes = nullptr;                            // cajas que flotan sobr
 std::vector<RigidObject*> rigidObjects;
 
 // managers
-FireWorkManager* fireWorkManager = nullptr;
+FireWorkManager* fireWorkManager = nullptr;             // fuegos artificiales que se lanzaran cuando el jugador supere su anterior marca
 
 std::vector<Manager*> managers;
 
 // fuerzas
-GravityForce* gravityForce = nullptr;
-ParticleBuoyancy* boxesBuoyancy = nullptr;
+GravityForce* gravityBoxes = nullptr;                   // gravedad que afecta a las cajas flotantes
+GravityForce* gravityWaterFalls = nullptr;              // gravedad que afecta a las fuentes de agua
+ParticleBuoyancy* boxesBuoyancy = nullptr;              // flotamiento de las cajas
 
 std::vector<ParticleForceGenerator*> forces;
 
@@ -94,8 +95,10 @@ void initMyVariables() {
 	cameraObject->setActorFlag(PxActorFlag::eDISABLE_GRAVITY, true); // para que no le afecte la gravedad
 
 	// fuerzas
-	gravityForce = new GravityForce({ 0, -30, 0 });
-	forces.push_back(gravityForce);
+	gravityBoxes = new GravityForce({ 0, -30, 0 });
+	forces.push_back(gravityBoxes);
+	gravityWaterFalls = new GravityForce({ 0, -200, 0 });
+	forces.push_back(gravityWaterFalls);
 	boxesBuoyancy = new ParticleBuoyancy(4, 4, -30, 20);
 	forces.push_back(boxesBuoyancy);
 
@@ -109,11 +112,13 @@ void initMyVariables() {
 
 	// agua
 	water = new Water(gScene, gPhysics, 12, WATERPOSITION);
+	water->addForceGenrator(gravityWaterFalls);
+	water->createForcesRegistry();
 	rigidObjects.push_back(water);
 
 	// cajas flotantes
 	boxes = new WaterBoxes(gScene, gPhysics, 20, PLAYERPOSITION);
-	boxes->addForceGenrator(gravityForce);
+	boxes->addForceGenrator(gravityBoxes);
 	boxes->addForceGenrator(boxesBuoyancy);
 	boxes->createForcesRegistry();
 	rigidObjects.push_back(boxes);

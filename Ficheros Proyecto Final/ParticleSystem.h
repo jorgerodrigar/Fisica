@@ -9,6 +9,7 @@ public:
 	ParticleSystem(Vector3 pos_ = { 0.0, 0.0, 0.0 }):pos(pos_) {}
 
 	void Shoot(float vel = 75);              // dispara particulas en direcciones aleatorias como una fuente
+	inline void setPosition(Vector3 pos_) { pos = pos_; }
 
 	virtual ~ParticleSystem() {}
 };
