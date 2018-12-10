@@ -14,16 +14,18 @@ private:
 	const int maxLateral = 80;
 	const float posY = -30;
 
-	//dimensiones de los obstaculos
-	const int minWidth = 5;            // anchura variable, lo demas siempre constante
-	const int maxWidth = 50;
+	// dimensiones de los obstaculos
+	float groundWidth;
+	std::vector<int> widths;              // anchuras posibles
 	const float length = 5;
 	const float height = 5;
 
-	Vector3 randomizePos(int i);       // establece una posicion aleatoria
+	std::vector<int> widthTypes;
+
+	Vector3 randomizePos(int typeWidth);  // establece una posicion aleatoria
 
 public:
-	Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_, Vector3 pos_);
+	Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_, Vector3 pos_, float groundWidth_ = 75.0);
 
 	virtual void update(float t);
 	virtual void handleEvent(unsigned char key) {}

@@ -1,8 +1,8 @@
 #pragma once
-#include "RigidObject.h"
+#include "GameObject.h"
 
 template<typename T>
-class InfiniteObjectsManager : public RigidObject // gestor de objetos que parecen infinitos (suelo, agua, obstaculos, ...)
+class InfiniteObjectsManager : public GameObject // gestor de objetos que parecen infinitos (suelo, agua, obstaculos, ...)
 {
 protected:
 	Vector3 playerPos = { 0, 0, 0 };    // posicion actual del jugador (habra que ir actualizandola)
@@ -14,7 +14,7 @@ protected:
 
 public:
 	InfiniteObjectsManager(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numElems_, Vector3 pos_):
-	RigidObject(gScene_, gPhysics_, pos_), numElems(numElems_) {}
+		GameObject(gScene_, gPhysics_, pos_), numElems(numElems_) {}
 
 	virtual void update(float t) = 0;
 	virtual void handleEvent(unsigned char key) {}

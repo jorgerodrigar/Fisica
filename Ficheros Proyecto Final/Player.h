@@ -1,5 +1,5 @@
 #pragma once
-#include "RigidObject.h"
+#include "GameObject.h"
 
 // estados en los que puede encontrarse el jugador
 enum PlayerPosition {
@@ -8,7 +8,7 @@ enum PlayerPosition {
 	RIGHT
 };
 
-class Player:public RigidObject              // representa al jugador
+class Player:public GameObject              // representa al jugador
 {
 private:
 	physx::PxRigidDynamic* player = nullptr; // cuerpo del jugador

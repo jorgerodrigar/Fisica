@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos_, float tam, Vector4 color):
-	RigidObject(gScene_, gPhysics_, pos_)
+	GameObject(gScene_, gPhysics_, pos_)
 {
 	physx::PxShape* playerShape = CreateShape(physx::PxSphereGeometry(tam));
 	physx::PxTransform playerTrans(pos);
