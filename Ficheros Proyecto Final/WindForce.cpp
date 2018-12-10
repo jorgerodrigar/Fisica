@@ -24,7 +24,7 @@ void WindForce::updateForce(physx::PxRigidDynamic* obj, float t) {
 void WindForce::handleEvent(unsigned char key) {
 	switch (toupper(key))
 	{
-	case ' ':
+	case 'P':
 		active = !active;
 		setActive(active);
 		break;

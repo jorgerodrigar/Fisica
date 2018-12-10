@@ -2,7 +2,6 @@
 
 #include "RigidBodyManager.h"
 #include "ParticleBuoyancy.h"
-#include "ParticleForceRegistry.h"
 #include "ParticleAnchoredSpring.h"
 #include "Ground.h"
 #include "Player.h"
@@ -11,6 +10,7 @@
 #include "GravityForce.h"
 #include "Water.h"
 #include "WaterBoxes.h"
+#include "CountDown.h"
 
 using namespace physx;
 
@@ -29,6 +29,7 @@ private:
 	bool gameOver = false;                                  // indica si el jugador ha perdido
 	Particle* deadPlayer = nullptr;                         // representa graficamente la posicion en la que el jugador ha muerto
 	bool record = false;                                    // flag para controlar que solo se llame una vez a los fuegos cada vez que el jugador supera su marca
+	CountDown* countDown = nullptr;                         // cuenta atras para iniciar el juego (salvo que se pulse W)
 
 	// objetos
 	Ground* ground = nullptr;                               // suelo sobre el que se desarrolla el juego
@@ -62,7 +63,10 @@ public:
 
 	void update(double t);
 	void handleEvents(unsigned char key);
-	Player* getPlayer() { return player; }
+	inline Player* getPlayer() { return player; }
+	inline std::vector<ParticleForceGenerator*>* getForces() { return &forces; }
+	inline bool isGameRunning() { return running; }
+	inline void setRunning(bool run) { running = run; }
 
 	virtual ~GameManager();
 };

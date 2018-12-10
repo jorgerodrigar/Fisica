@@ -4,8 +4,7 @@ Player::Player(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos
 	GameObject(gScene_, gPhysics_, pos_)
 {
 	physx::PxShape* playerShape = CreateShape(physx::PxSphereGeometry(tam));
-	physx::PxTransform playerTrans(pos);
-	player = gPhysics->createRigidDynamic(playerTrans);
+	player = gPhysics->createRigidDynamic(physx::PxTransform(pos));
 	player->attachShape(*playerShape);
 	RenderItem* playeRenderItem = new RenderItem(playerShape, player, color);
 	physx::PxRigidBodyExt::updateMassAndInertia(*player, 1);

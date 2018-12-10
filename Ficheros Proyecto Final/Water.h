@@ -11,7 +11,7 @@ private:
 
 	float last_time = 0;
 	float next_time = 0;
-	const float timeShoot = 0.01;
+	const float timeShoot = 0.02;
 
 	std::vector<std::pair<ParticleSystem*, ParticleSystem*>> waterFalls; // cascadas a lo largo del agua
 

@@ -48,9 +48,11 @@ GameManager::GameManager(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_)
 	// managers
 	fireWorkManager = new FireWorkManager();
 	managers.push_back(fireWorkManager);
+
+	countDown = new CountDown(this); // inicializo el countDown
 }
 
-// metodos auxiliares del update...
+// metodos auxiliares...
 void GameManager::infiniteObjectsUpdate() {
 	ground->setPlayerPos(player->getObject()->getGlobalPose().p);
 	obstacles->setPlayerPos(player->getObject()->getGlobalPose().p);
@@ -85,6 +87,7 @@ void GameManager::gameLogic(double t) {            // si la camara pasa al jugad
 		cameraObject->setLinearVelocity({ 0, 0, 0 });
 		cameraObject->setGlobalPose(PxTransform(CAMERAPOSITION));
 		for (auto o : rigidObjects)o->resetParameters();
+		countDown->resetParameters();
 	}
 
 	if (deadPlayer != nullptr) {      // si el jugador ha muerto y ha superado su ultima marca, lanzamos fuegos artificiales
@@ -98,12 +101,13 @@ void GameManager::gameLogic(double t) {            // si la camara pasa al jugad
 
 void GameManager::update(double t) {
 	infiniteObjectsUpdate(); // actualiza la posicion del jugador en todos los objetos 'infinitos'
-
+	
 	for (auto o : rigidObjects)o->update(t);
 	for (auto m : managers)m->update(t);
 
 	cameraUpdate();         // movimiento de la camara
 	gameLogic(t);           // logica del juego
+	countDown->update(t);   // actualizo el countDawn
 }
 
 void GameManager::handleEvents(unsigned char key) {
@@ -116,6 +120,7 @@ void GameManager::handleEvents(unsigned char key) {
 	case 'W': {  // al pulsar W la partida comienza
 		if (!running) {
 			player->startRunning();
+			countDown->setActive(false);
 			running = true;
 		}
 		break;
@@ -142,6 +147,6 @@ GameManager::~GameManager()
 		f = nullptr;
 	}
 
-	delete deadPlayer;
-	deadPlayer = nullptr;
+	delete countDown; countDown = nullptr;
+	delete deadPlayer; deadPlayer = nullptr;
 }
