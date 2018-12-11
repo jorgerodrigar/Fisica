@@ -20,7 +20,7 @@ private:
 	ParticleSpring* spring2 = nullptr;
 	ParticleForceRegistry<Particle>* registry = nullptr;
 public:
-	CountDown(GameManager* gm);
+	CountDown(GameManager* gm, Vector3 pos = { 0, 60, 0 });
 
 	void update(double t);
 	void resetParameters();

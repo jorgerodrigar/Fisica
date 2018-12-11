@@ -9,7 +9,7 @@ private:
 	// posicion de los obstaculos
 	const int minFromPlayer = 200;
 	const int maxFromPlayer = 500;
-	const int minFromLastObstacle = 50;
+	const int minFromLastObstacle = 70;
 	const int maxFromLastObstacle = 200;
 	const int maxLateral = 80;
 	const float posY = -30;

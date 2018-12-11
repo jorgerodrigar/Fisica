@@ -56,5 +56,6 @@ void Player::resetParameters() {  // el jugador vuelve a su posicion y velocidad
 	start = false;
 	actualPosition = MIDDLE;
 	player->setLinearVelocity({ 0, 0, 0 });
-	player->setGlobalPose(physx::PxTransform(pos)); 
+	player->setAngularVelocity({ 0, 0, 0 });
+	player->setGlobalPose(physx::PxTransform(pos));
 }

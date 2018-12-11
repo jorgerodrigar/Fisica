@@ -24,7 +24,7 @@ protected:
 public:
 	Particle() {}
 	Particle(RenderItem* renderItem_, Vector3 p_ = { 0.0, 0.0, 0.0 }, Vector3 v_ = { 0.0, 0.0, 0.0 },
-		Vector3 a_ = { 0.0, 0.0, 0.0 }, float damping_ = 0.95, int inverse_mass_ = 1, float maxRec = 200);
+		Vector3 a_ = { 0.0, 0.0, 0.0 }, float damping_ = 0.95, int inverse_mass_ = 1, float maxRec = 50);
 
 	void update(float t) { integrate(t); }
 
@@ -35,6 +35,7 @@ public:
 	// posicion
 	inline void setPosition(float x, float y, float z) { p = { x, y, z }; posIni = p; }
 	inline void setPosition(Vector3 pos) { p = pos; posIni = p; }
+	inline void setToInitialPosition() { p = posIni; }
 
 	// velocidad
 	inline void setVelocity(float x, float y, float z) { v = { x, y, z }; }

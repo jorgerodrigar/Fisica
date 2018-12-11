@@ -59,7 +59,7 @@ void GameManager::infiniteObjectsUpdate() {
 	water->setPlayerPos(player->getObject()->getGlobalPose().p);
 	boxes->setPlayerPos(player->getObject()->getGlobalPose().p);
 }
-void GameManager:: cameraUpdate() {
+void GameManager::cameraUpdate() {
 	if (running)cameraObject->setLinearVelocity({ PLAYERVELOCITY, 0, 0 });    // si estamos jugando, se le aplica al gestor de la camara la misma vel que al jugador
 	GetCamera()->setEye(cameraObject->getGlobalPose().p);                     // la camara se pondra en la posicion de su gestor
 }
