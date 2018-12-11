@@ -2,10 +2,11 @@
 #include "WindForce.h"
 #include "ParticleSpring.h"
 #include "ParticleForceRegistry.h"
+#include "GameObject.h"
 
 class GameManager;
 
-class CountDown
+class CountDown:public GameObject
 {
 private:
 	GameManager* gameManager = nullptr;                     // puntero al gameManager para poder acceder a algunos metodos
@@ -20,10 +21,11 @@ private:
 	ParticleSpring* spring2 = nullptr;
 	ParticleForceRegistry<Particle>* registry = nullptr;
 public:
-	CountDown(GameManager* gm, Vector3 pos = { 0, 60, 0 });
+	CountDown(GameManager* gm, Vector3 pos_ = { 0, 60, 0 });
 
-	void update(double t);
-	void resetParameters();
+	virtual void update(float t);
+	virtual void handleEvent(unsigned char key) {}
+	virtual void resetParameters();
 	void setActive(bool active);
 
 	virtual ~CountDown();

@@ -28,7 +28,7 @@ Vector3 Obstacles::randomizePos(int i) {
 Obstacles::Obstacles(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_, Vector3 pos_, float groundWidth_) :
 	InfiniteObjectsManager(gScene_, gPhysics_, numObstacles_, pos_), groundWidth(groundWidth_)
 {
-	for (int i = 1; i < 4; i++) widths.push_back((groundWidth / 3)*i);
+	for (int i = 1; i < 4; i++) widths.push_back((groundWidth / 3)*i); // anchuras posibles: 1/3, 2/3, y 3/3 de la anchura del suelo
 
 	for (int i = 0; i < numElems; i++) {
 		float widthNum = rand() % 3;

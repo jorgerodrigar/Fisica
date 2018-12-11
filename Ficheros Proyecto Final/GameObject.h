@@ -12,6 +12,7 @@ protected:
 	Vector3 pos;                           // posicion inicial del objeto
 
 public:
+	GameObject(Vector3 pos_):pos(pos_) {}
 	GameObject(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, Vector3 pos_):gScene(gScene_), gPhysics(gPhysics_), pos(pos_) {}
 
 	// metodos abstractos que compartiran

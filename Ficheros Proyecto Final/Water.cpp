@@ -1,7 +1,7 @@
 #include "Water.h"
 
-Water::Water(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numGrounds_, Vector3 pos_, float width_, float length_) :
-	InfiniteObjectsManager(gScene_, gPhysics_, numGrounds_, pos_), width(width_), length(length_)
+Water::Water(int numGrounds_, Vector3 pos_, float width_, float length_) :
+	InfiniteObjectsManager(numGrounds_, pos_), width(width_), length(length_)
 {
 	// creo numElems 'trozos' de agua, uno detras de otro y los guardo en el vector
 	for (int i = 0; i < numElems; i++) {

@@ -1,7 +1,7 @@
 #include "CountDown.h"
 #include "GameManager.h"
 
-CountDown::CountDown(GameManager* gm, Vector3 pos):gameManager(gm)
+CountDown::CountDown(GameManager* gm, Vector3 pos_):GameObject(pos_), gameManager(gm)
 {
 	// particulas que se veran afectadas por muelle entre si
 	physx::PxShape* shape1 = CreateShape(physx::PxSphereGeometry(3));
@@ -36,7 +36,7 @@ CountDown::CountDown(GameManager* gm, Vector3 pos):gameManager(gm)
 	registry->add(p2, wind2);
 }
 
-void CountDown::update(double t) {
+void CountDown::update(float t) {
 	p1->update(t);
 	p2->update(t);
 	registry->updateForces(t);

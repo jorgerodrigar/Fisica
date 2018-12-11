@@ -3,6 +3,6 @@
 RenderObject::RenderObject(const physx::PxGeometry& geo, Vector3 pos, Vector4 color)
 {
 	physx::PxShape* shape = CreateShape(geo);
-	renderItem = new RenderItem(shape, new physx::PxTransform(pos), color);
+	renderItem = new RenderItem(shape, &physx::PxTransform(pos), color);
 	shape->release();
 }

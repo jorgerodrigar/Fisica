@@ -16,8 +16,7 @@ private:
 	std::vector<std::pair<ParticleSystem*, ParticleSystem*>> waterFalls; // cascadas a lo largo del agua
 
 public:
-	Water(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numGrounds_,
-		Vector3 pos_, float width_ = 225.0, float length_ = 300.0);
+	Water(int numGrounds_, Vector3 pos_, float width_ = 225.0, float length_ = 300.0);
 
 	virtual void update(float t);
 	virtual void handleEvent(unsigned char key) {}

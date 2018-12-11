@@ -22,7 +22,7 @@ private:
 	Vector3 randomizePos();       // establece una posicion aleatoria
 
 public:
-	WaterBoxes(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_, Vector3 pos_);
+	WaterBoxes(int numObstacles_, Vector3 pos_);
 
 	virtual void update(float t);
 	virtual void handleEvent(unsigned char key) {}

@@ -13,6 +13,7 @@ protected:
 	std::vector<T*> elems;
 
 public:
+	InfiniteObjectsManager(int numElems_, Vector3 pos_) : GameObject(pos_), numElems(numElems_) {}
 	InfiniteObjectsManager(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numElems_, Vector3 pos_):
 		GameObject(gScene_, gPhysics_, pos_), numElems(numElems_) {}
 

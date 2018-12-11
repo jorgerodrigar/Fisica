@@ -11,8 +11,7 @@ Vector3 WaterBoxes::randomizePos() {
 	return lastPosition;
 }
 
-WaterBoxes::WaterBoxes(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_, int numObstacles_, Vector3 pos_) :
-	InfiniteObjectsManager(gScene_, gPhysics_, numObstacles_, pos_)
+WaterBoxes::WaterBoxes(int numObstacles_, Vector3 pos_) : InfiniteObjectsManager(numObstacles_, pos_)
 {
 	for (int i = 0; i < numElems; i++) {
 		physx::PxShape* shape = CreateShape(physx::PxBoxGeometry(length, height, width));

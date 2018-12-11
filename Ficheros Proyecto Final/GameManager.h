@@ -48,7 +48,7 @@ private:
 	ParticleBuoyancy* boxesBuoyancy = nullptr;              // flotamiento de las cajas
 
 	// vectores donde englobo los distintos sistemas
-	std::vector<GameObject*> rigidObjects;
+	std::vector<GameObject*> gameObjects;
 	std::vector<Manager*> managers;
 	std::vector<ParticleForceGenerator*> forces;
 

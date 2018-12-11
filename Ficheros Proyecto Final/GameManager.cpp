@@ -5,7 +5,7 @@ GameManager::GameManager(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_)
 	// jugador
 	player = new Player(gScene_, gPhysics_, PLAYERPOSITION);
 	player->setVelocity(PLAYERVELOCITY);
-	rigidObjects.push_back(player);
+	gameObjects.push_back(player);
 
 	// gestor de la posicion de la camara (rigidBody situado en la posicion en la que debe estar la camara)
 	physx::PxShape* shape = CreateShape(physx::PxSphereGeometry(5));
@@ -26,30 +26,32 @@ GameManager::GameManager(physx::PxScene* gScene_, physx::PxPhysics* gPhysics_)
 
 	// suelo
 	ground = new Ground(gScene_, gPhysics_, 12, GROUNDPOSITION);
-	rigidObjects.push_back(ground);
+	gameObjects.push_back(ground);
 
 	// obstaculos
 	obstacles = new Obstacles(gScene_, gPhysics_, 10, PLAYERPOSITION);
-	rigidObjects.push_back(obstacles);
+	gameObjects.push_back(obstacles);
 
 	// agua
-	water = new Water(gScene_, gPhysics_, 12, WATERPOSITION);
+	water = new Water(12, WATERPOSITION);
 	water->addForceGenrator(gravityWaterFalls);
 	water->createForcesRegistry();
-	rigidObjects.push_back(water);
+	gameObjects.push_back(water);
 
 	// cajas flotantes
-	boxes = new WaterBoxes(gScene_, gPhysics_, 20, PLAYERPOSITION);
+	boxes = new WaterBoxes(20, PLAYERPOSITION);
 	boxes->addForceGenrator(gravityBoxes);
 	boxes->addForceGenrator(boxesBuoyancy);
 	boxes->createForcesRegistry();
-	rigidObjects.push_back(boxes);
+	gameObjects.push_back(boxes);
 
 	// managers
 	fireWorkManager = new FireWorkManager();
 	managers.push_back(fireWorkManager);
 
-	countDown = new CountDown(this); // inicializo el countDown
+	// cuenta atras
+	countDown = new CountDown(this);
+	gameObjects.push_back(countDown);
 }
 
 // metodos auxiliares...
@@ -86,8 +88,7 @@ void GameManager::gameLogic(double t) {            // si la camara pasa al jugad
 		record = false;
 		cameraObject->setLinearVelocity({ 0, 0, 0 });
 		cameraObject->setGlobalPose(PxTransform(CAMERAPOSITION));
-		for (auto o : rigidObjects)o->resetParameters();
-		countDown->resetParameters();
+		for (auto o : gameObjects)o->resetParameters();
 	}
 
 	if (deadPlayer != nullptr) {      // si el jugador ha muerto y ha superado su ultima marca, lanzamos fuegos artificiales
@@ -102,16 +103,15 @@ void GameManager::gameLogic(double t) {            // si la camara pasa al jugad
 void GameManager::update(double t) {
 	infiniteObjectsUpdate(); // actualiza la posicion del jugador en todos los objetos 'infinitos'
 	
-	for (auto o : rigidObjects)o->update(t);
+	for (auto o : gameObjects)o->update(t);
 	for (auto m : managers)m->update(t);
 
 	cameraUpdate();         // movimiento de la camara
 	gameLogic(t);           // logica del juego
-	countDown->update(t);   // actualizo el countDawn
 }
 
 void GameManager::handleEvents(unsigned char key) {
-	for (auto o : rigidObjects)o->handleEvent(key);
+	for (auto o : gameObjects)o->handleEvent(key);
 	for (auto m : managers)m->handleEvent(key);
 	for (auto f : forces)f->handleEvent(key);
 
@@ -132,7 +132,7 @@ void GameManager::handleEvents(unsigned char key) {
 
 GameManager::~GameManager()
 {
-	for (auto o : rigidObjects) {
+	for (auto o : gameObjects) {
 		delete o;
 		o = nullptr;
 	}
@@ -147,6 +147,5 @@ GameManager::~GameManager()
 		f = nullptr;
 	}
 
-	delete countDown; countDown = nullptr;
 	delete deadPlayer; deadPlayer = nullptr;
 }
